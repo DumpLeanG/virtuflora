@@ -1,16 +1,27 @@
-html,
-body {
-  min-height: 100vh;
-  padding: 0;
-  margin: 0;
-  font-family: system-ui, sans-serif;
+@import "tailwindcss";
+
+@theme {
+  --color-*: initial;
+  --color-black: #4A4A4A;
+  --color-background: #E8EDDF;
+  --color-background-2: #D4E2D4;
+  --color-yellow: #FFD700;
+  --color-gray: #C7D3D6;
+  --color-purple: #B19CD9;
+  --color-green: #9ABD6D;
+  --color-blue: #9AD4D6;
+  --color-red: #FF6B6B;
+  --color-light-red: #FF9B9B;
+  --color-beige: #F5F5DC;
+  --color-dark-beige: #E3D8C6;
+
+  --drop-shadow-2: 2px 2px 0 var(--color-black);
+  --drop-shadow-3: 3px 3px 0 var(--color-black);
+  --drop-shadow-4: 4px 4px 0 var(--color-black);
+
+  
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+@layer components {
 
-* {
-  box-sizing: border-box;
 }
