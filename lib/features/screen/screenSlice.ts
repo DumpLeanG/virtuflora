@@ -1,11 +1,11 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-export type Breakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 type ScreenState = { breakpoint: Breakpoint };
 
 const initialState: ScreenState = {
-  breakpoint: 'sm'
+  breakpoint: 'xs'
 };
 
 export const screenSlice = createAppSlice({

@@ -19,7 +19,7 @@
   --drop-shadow-3: 3px 3px 0 var(--color-black);
   --drop-shadow-4: 4px 4px 0 var(--color-black);
 
-  
+  --breakpoint-xs: 30rem;
 }
 
 @layer components {

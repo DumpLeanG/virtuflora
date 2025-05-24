@@ -41,9 +41,9 @@ export default function Button(props: StandardButtonType | ArrowButtonType) {
 
     return (
         props.type !== 'arrow' ?
-        (<button onClick={props.onClick} className={`${props.className} relative z-1 p-2 border-2 md:border-3 rounded-sm border-black drop-shadow-3 ${colors[props.type].color} hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-3 disabled:duration-initial disabled:opacity-50`} disabled={props.disabled}>
+        (<button onClick={props.onClick} className={`${props.className} group relative z-1 p-2 border-2 md:border-3 rounded-sm border-black drop-shadow-3 ${colors[props.type].color} hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-3/50 disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-3/50`} disabled={props.disabled}>
             <Image
-            className="size-4 md:size-6 max-w-7"
+            className="size-4 md:size-6 max-w-7 group-disabled:opacity-50"
             src={`${props.type}.svg`}
             alt={`${props.type}`}
             width={28}
@@ -52,10 +52,10 @@ export default function Button(props: StandardButtonType | ArrowButtonType) {
             />
         </button>)
         : 
-        (<button onClick={props.onClick} className={`${props.className} ${props.arrowType === 'prev' ? 'left-0' : 'right-0'} top-1/2 absolute z-1 p-2 border-2 rounded-full border-black bg-dark-beige cursor-pointer disabled:cursor-default disabled:opacity-50`} disabled={props.disabled}>
+        (<button onClick={props.onClick} className={`${props.className} ${props.arrowType === 'prev' ? '-left-4.5' : '-right-4.5'} group z-1 p-2 border-2 rounded-full border-black bg-dark-beige cursor-pointer disabled:cursor-default disabled:border-black/50`} disabled={props.disabled}>
             <Image
-            className="size-4 md:size-6 max-w-7"
-            src={`settings.svg`}
+            className={`size-4 md:size-6 max-w-7 group-disabled:opacity-50 ${props.arrowType === 'prev' && 'rotate-180'}`}
+            src={`${props.type}.svg`}
             alt={`${props.type}`}
             width={28}
             height={28}

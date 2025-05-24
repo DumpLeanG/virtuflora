@@ -9,7 +9,8 @@ const getBreakpoint = (width: number): Breakpoint => {
     if (width >= 1280) return 'xl';
     if (width >= 1024) return 'lg';
     if (width >= 768) return 'md';
-    return 'sm';
+    if (width >= 640) return 'sm';
+    return 'xs';
 };
 
 export const ScreenTracker = () => {

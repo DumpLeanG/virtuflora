@@ -4,9 +4,9 @@ export default function PlantCard() {
 
   return (
     <div className="flex flex-col">
-        <div className="bg-background rounded-sm p-3 border-3 border-black flex items-center justify-center drop-shadow-2">
+        <div className="bg-background rounded-sm p-2 md:p-3 border-3 border-black flex items-center justify-center drop-shadow-2">
             <Image
-            className="size-7 md:size-8 object-contain"
+            className="size-6 md:size-8 object-contain"
             src="/cucumber.svg"
             alt="cucumber"
             width={36}
