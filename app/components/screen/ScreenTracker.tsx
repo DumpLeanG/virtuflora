@@ -1,16 +1,22 @@
 'use client';
 
-import { useAppDispatch } from '@/lib/hooks';
+import { useAppDispatch } from '@/lib/hooks/hooks';
 import { useEffect } from 'react';
-import  { type Breakpoint, setBreakpoint } from '@/lib/features/screen/screenSlice';
+import  { setWidthBreakpoint, setHeightBreakpoint } from '@/lib/features/screen/screenSlice';
+import type { WidthBreakpoint, HeightBreakpoint } from '@/lib/features/screen/screenSlice';
 
-const getBreakpoint = (width: number): Breakpoint => {
-    if (width >= 1536) return '2xl';
-    if (width >= 1280) return 'xl';
-    if (width >= 1024) return 'lg';
-    if (width >= 768) return 'md';
-    if (width >= 640) return 'sm';
-    return 'xs';
+const getWidthBreakpoint = (width: number): WidthBreakpoint => {
+  if (width >= 1536) return '2xl';
+  if (width >= 1280) return 'xl';
+  if (width >= 1024) return 'lg';
+  if (width >= 768) return 'md';
+  if (width >= 640) return 'sm';
+  return 'xs';
+};
+
+const getHeightBreakpoint = (height: number): HeightBreakpoint => {
+  if (height <= 900) return 'h-sm';
+  return 'h-lg';
 };
 
 export const ScreenTracker = () => {
@@ -18,8 +24,11 @@ export const ScreenTracker = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const breakpoint = getBreakpoint(window.innerWidth);
-      dispatch(setBreakpoint(breakpoint));
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      dispatch(setWidthBreakpoint(getWidthBreakpoint(width)));
+      dispatch(setHeightBreakpoint(getHeightBreakpoint(height)));
     };
 
     handleResize();

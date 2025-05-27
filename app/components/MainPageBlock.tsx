@@ -2,17 +2,17 @@
 
 import PlantsList from "./plants/PlantsList";
 import Garden from "./garden/Garden";
-import { selectBreakpoint } from "@/lib/features/screen/screenSlice";
-import { useAppSelector } from "@/lib/hooks";
+import { selectWidthBreakpoint } from "@/lib/features/screen/screenSlice";
+import { useAppSelector } from "@/lib/hooks/hooks";
 
 export default function MainPageBlock() {
-  const breakpoint = useAppSelector(selectBreakpoint);
+  const widthBP = useAppSelector(selectWidthBreakpoint);
 
   return (
       <>
-        {breakpoint !== 'xs' && <PlantsList side="left" buttonType="inventory"/>}
+        {widthBP !== 'xs' && <PlantsList side="left" buttonType="inventory"/>}
         <Garden />
-        {breakpoint !== 'xs' && <PlantsList side="right" buttonType="shop"/>}
+        {widthBP !== 'xs' && <PlantsList side="right" buttonType="shop"/>}
       </>
   );
 };

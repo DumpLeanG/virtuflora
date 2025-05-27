@@ -1,18 +1,18 @@
 "use client";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppSelector } from "@/lib/hooks/hooks";
 import Layout from "../Layout";
-import { selectBreakpoint } from "@/lib/features/screen/screenSlice";
+import { selectWidthBreakpoint } from "@/lib/features/screen/screenSlice";
 import Button from "../button/Button";
 import PlantsList from "../../plants/PlantsList";
 
 export default function Footer() {
-    const breakpoint = useAppSelector(selectBreakpoint);
+    const widthBP = useAppSelector(selectWidthBreakpoint);
 
     return (
         <footer className="py-4 md:py-6 bg-background-2 border-t-3 border-black">
             <Layout>
-                {breakpoint !== 'xs' ? 
+                {widthBP !== 'xs' ? 
                 <span className="text-center block">2025 Virtuflora. Created by Michail Chinenov</span>
                 :
                 <div className="flex gap-4 justify-center">
