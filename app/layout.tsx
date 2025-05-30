@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import "./styles/globals.css";
 import { ScreenTracker } from "./components/screen/ScreenTracker";
 
-export const inter = Inter({subsets: ['cyrillic', 'latin'], weight: ['700']});
+const inter = Inter({subsets: ['cyrillic', 'latin'], weight: ['700']});
 
 interface Props {
   readonly children: ReactNode;
