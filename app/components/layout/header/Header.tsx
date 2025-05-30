@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Button from "../button/Button";
 import Achievements from "@/app/components/achievements/Achievements";
+import Settings from "../../settings/Settings";
 import { useState } from "react";
 
 type OpenedWindow = null | "achievements" | "settings";
@@ -18,7 +19,7 @@ export default function Header() {
                 <nav className="flex justify-between items-center">
                     <Link href="/">
                         <Image
-                        className="drop-shadow-2 w-24 h-5.5 md:w-29 md:h-6.5"
+                        className="drop-shadow-2 drop-shadow-black w-24 h-5.5 md:w-29 md:h-6.5"
                         src="/logo.svg"
                         alt="logo"
                         width={116}
@@ -32,7 +33,7 @@ export default function Header() {
                     </div>
                 </nav>
             </Layout>
-            {openedWindow === "achievements" ? <Achievements handleOutsideClick={() => setOpenedWindow(null)}/> : openedWindow === "settings" && <Achievements handleOutsideClick={() => setOpenedWindow(null)}/>}
+            {openedWindow === "achievements" ? <Achievements handleOutsideClick={() => setOpenedWindow(null)}/> : openedWindow === "settings" && <Settings handleOutsideClick={() => setOpenedWindow(null)}/>}
         </header>
     )
 }

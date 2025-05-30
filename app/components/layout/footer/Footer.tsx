@@ -17,8 +17,8 @@ export default function Footer() {
                 :
                 <div className="flex gap-4 justify-center">
                     <Button type="water" disabled/>
-                    <PlantsList side="left" buttonType="inventory"/>
-                    <PlantsList side="right" buttonType="shop"/>
+                    <PlantsList side="left" type="inventory"/>
+                    <PlantsList side="right" type="shop"/>
                     <Button type="dig" disabled/>
                 </div> }
             </Layout>

@@ -8,6 +8,7 @@
   --color-yellow: #FFD700;
   --color-gray: #C7D3D6;
   --color-purple: #B19CD9;
+  --color-orange: #FFA07A;
   --color-green: #9ABD6D;
   --color-blue: #9AD4D6;
   --color-red: #FF6B6B;
@@ -15,12 +16,44 @@
   --color-beige: #F5F5DC;
   --color-dark-beige: #E3D8C6;
 
-  --drop-shadow-2: 2px 2px 0 var(--color-black);
-  --drop-shadow-3: 3px 3px 0 var(--color-black);
+  --drop-shadow-2: 2px 2px 0 currentColor;
+  --drop-shadow-3: 3px 3px 0 currentColor;
 
   --breakpoint-xs: 30rem;
 }
 
-@layer components {
+@layer utilities {
+  .text-stroke-2 {
+    -webkit-text-stroke: 4px currentColor;
+    text-stroke: 4px currentColor;
+    paint-order: stroke fill;
+  }
 
+  .text-stroke-3 {
+    -webkit-text-stroke: 6px currentColor;
+    text-stroke: 6px currentColor;
+    paint-order: stroke fill;
+  }
+
+  .text-stroke-black {
+    -webkit-text-stroke-color: var(--color-black);
+    text-stroke-color: var(--color-black);
+  }
+}
+
+@layer base {
+  ::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    position: relative;
+    height: 44px;
+    width: 44px;
+    border-radius: 4px;
+    background: var(--color-green);
+    cursor: ew-resize;
+    border: 3px solid var(--color-black);
+    z-index: 2;
+  }
+  ::-webkit-slider-runnable-track  {
+      -webkit-appearance: none;
+  }
 }

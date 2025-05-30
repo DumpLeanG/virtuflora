@@ -4,7 +4,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 export type WidthBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type HeightBreakpoint = 'h-sm' | 'h-lg';
 
-type ScreenState = { 
+interface ScreenState { 
   widthBreakpoint: WidthBreakpoint;
   heightBreakpoint: HeightBreakpoint;
 };

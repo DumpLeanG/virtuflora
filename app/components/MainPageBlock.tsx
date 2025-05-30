@@ -10,9 +10,9 @@ export default function MainPageBlock() {
 
   return (
       <>
-        {widthBP !== 'xs' && <PlantsList side="left" buttonType="inventory"/>}
+        {widthBP !== 'xs' && <PlantsList side="left" type="inventory"/>}
         <Garden />
-        {widthBP !== 'xs' && <PlantsList side="right" buttonType="shop"/>}
+        {widthBP !== 'xs' && <PlantsList side="right" type="shop"/>}
       </>
   );
 };

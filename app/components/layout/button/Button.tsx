@@ -2,7 +2,6 @@ import Image from "next/image";
 import React from "react";
 
 interface ButtonType {
-    
     disabled?: true | false;
     onClick?: any;
     className?: string;
@@ -19,7 +18,7 @@ interface ArrowButtonType extends ButtonType {
 }
 
 interface TextButtonType extends ButtonType {
-    type: 'claim';
+    type: 'claim' | 'exit';
     completed?: true | false;
 }
 
@@ -61,17 +60,24 @@ export default function Button(props: StandardButtonType | ArrowButtonType | Tex
         </button>)
         : props.type === 'claim' ?
         <button onClick={props.onClick} 
-            className={`${props.className} group relative z-1 py-2 px-6 md:px-12 border-2 md:border-3 rounded-sm border-black drop-shadow-2 md:drop-shadow-3 
+            className={`${props.className} group relative z-1 py-2 px-6 md:px-12 border-2 md:border-3 rounded-sm border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black
             bg-green hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-2/50 md:disabled:hover:drop-shadow-3/50 
             disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
         >
             {props.completed ? "Claimed" : "Claim"}
         </button>
-        :
-        (<button onClick={props.onClick} 
-            className={`${props.className} group relative z-1 p-2 border-2 md:border-3 rounded-sm border-black drop-shadow-2 md:drop-shadow-3 
-            ${colors[props.type].color} hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-2/50 md:disabled:hover:drop-shadow-3/50 
-            disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled}
+        : props.type === 'exit' ?
+        <button onClick={props.onClick} 
+            className={`${props.className} group relative z-1 py-2 px-6 md:px-12 border-2 md:border-3 rounded-sm border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black
+            bg-red hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-2/50 md:disabled:hover:drop-shadow-3/50 
+            disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
+        >
+            Exit
+        </button>
+        : (<button onClick={props.onClick} 
+            className={`${props.className} group relative z-1 p-2 border-2 md:border-3 rounded-sm border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black
+            ${colors[props.type].color} hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default 
+            disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none disabled:hover:drop-shadow-none`} disabled={props.disabled}
         >
             <Image
             className="size-4 md:size-6 max-w-7 group-disabled:opacity-50"
