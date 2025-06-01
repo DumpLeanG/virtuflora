@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
 import { cancelPlanting, plantOnBed, type GardenBed } from "@/lib/features/garden/gardenSlice";
-import { GrowingPlant } from "@/lib/types/plants";
 import { decreasePlantAmount } from "@/lib/features/player/playerSlice";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 

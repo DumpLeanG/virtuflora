@@ -33,4 +33,3 @@ export const screenSlice = createAppSlice({
 
 export const { setWidthBreakpoint, setHeightBreakpoint } = screenSlice.actions;
 export const { selectWidthBreakpoint, selectHeightBreakpoint } = screenSlice.selectors;
-export default screenSlice.reducer;

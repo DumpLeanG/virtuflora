@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
 import { selectPlant } from "@/lib/features/garden/gardenSlice";
 import { buyPlant } from "@/lib/features/player/playerSlice";
-import { PlantBase } from '@/lib/types/plants';
+import type { PlantBase } from '@/lib/types/plants';
 
 interface PlantsListProps {
   type: 'inventory' | 'shop';

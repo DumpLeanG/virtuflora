@@ -17,3 +17,9 @@ export interface InventoryItem extends PlantBase {
 export interface ShopItem extends PlantBase {
   price: number;
 }
+
+export interface PlantDefinition extends GrowingPlant {
+    id: number;
+    growthTime: number;
+    price: number;
+}

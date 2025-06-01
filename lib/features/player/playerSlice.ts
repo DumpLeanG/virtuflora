@@ -1,6 +1,6 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { InventoryItem, ShopItem } from "@/lib/types/plants";
+import type { InventoryItem, ShopItem } from "@/lib/types/plants";
 
 interface PlayerState {
   balance: number;
@@ -48,4 +48,3 @@ export const playerSlice = createAppSlice({
 });
 
 export const { buyPlant, decreasePlantAmount, addMoney } = playerSlice.actions;
-export default playerSlice.reducer;

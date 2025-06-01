@@ -3,13 +3,16 @@ import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { screenSlice } from "./features/screen/screenSlice";
 import { gardenSlice } from "./features/garden/gardenSlice";
 import { playerSlice } from "./features/player/playerSlice";
+import { plantsApi } from "./services/plants/plantsApi";
 
-const rootReducer = combineSlices(screenSlice, gardenSlice, playerSlice);
+const rootReducer = combineSlices(screenSlice, gardenSlice, playerSlice, plantsApi);
 export type RootState = ReturnType<typeof rootReducer>;
 
 export const makeStore = () => {
   return configureStore({
     reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(plantsApi.middleware)
   });
 };
 

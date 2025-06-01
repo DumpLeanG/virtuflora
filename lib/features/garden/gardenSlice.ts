@@ -1,6 +1,6 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { GrowingPlant } from "@/lib/types/plants";
+import type { GrowingPlant } from "@/lib/types/plants";
 
 export interface GardenBed {
   id: string;
@@ -47,4 +47,3 @@ export const gardenSlice = createAppSlice({
 });
 
 export const { selectPlant, cancelPlanting, plantOnBed } = gardenSlice.actions;
-export default gardenSlice.reducer;
