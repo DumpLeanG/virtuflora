@@ -18,7 +18,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
   const [currentPage, setCurrentPage] = useState(1);
   let itemsPerPage = widthBP === 'xs' || widthBP === 'sm' ? 24 : widthBP === 'md' || widthBP === 'lg' ? 36 : widthBP === 'xl' ? 15 : 20;
 
-  const { data: plants = [], isLoading, isError } = useGetPlantsQuery();
+  const { data: plants = [], isLoading } = useGetPlantsQuery();
 
   const inventory = useAppSelector((state) => state.player.inventory);
 

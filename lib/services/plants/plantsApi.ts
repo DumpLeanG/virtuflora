@@ -3,6 +3,7 @@ import { supabase } from '../../supabase/supabaseClient';
 import type { PlantDefinition } from '../../types/plants';
 
 export const plantsApi = createApi({
+    reducerPath: 'plantsApi',
     baseQuery: fetchBaseQuery(),
     tagTypes: ['Plants'],
     endpoints: (build) => ({
