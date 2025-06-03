@@ -17,7 +17,7 @@ export default function Header() {
         <header className="py-4 md:py-6 bg-background-2 border-b-2 md:border-b-3 border-black">
             <Layout>
                 <nav className="flex justify-between items-center">
-                    <Link href="/">
+                    <Link href="/game">
                         <Image
                         className="drop-shadow-2 drop-shadow-black w-24 h-5.5 md:w-29 md:h-6.5"
                         src="/logo.svg"

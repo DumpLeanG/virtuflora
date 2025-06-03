@@ -3,7 +3,8 @@
 import Login from './Login';
 import Registration from './Registration';
 import React, { useState } from 'react';
-import { useRegisterMutation } from '@/lib/services/auth/authApi';
+import { useLoginMutation, useRegisterMutation } from '@/lib/services/auth/authApi';
+import { useRouter } from "next/navigation";
 
 type ActiveItem = "Login" | "Registration";
 
@@ -16,8 +17,12 @@ export default function Auth() {
         password: '',
         confirmPassword: '',
     })
-    const [register, { error, isLoading }] = useRegisterMutation();
+    const router = useRouter();
+    const [register, { error: registrationError, isLoading: isRegistrationLoading }] = useRegisterMutation();
+    const [login, { error: loginError, isLoading: isLoginLoading }] = useLoginMutation();
     
+    const error = activeItem === "Registration" ? registrationError : loginError;
+    const isLoading = activeItem === "Registration" ? isRegistrationLoading : isLoginLoading;
 
     const handleChangeActiveItem = (item: ActiveItem) => {
         setActiveItem(item);
@@ -33,7 +38,7 @@ export default function Auth() {
     const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault();
         if (activeItem === "Registration") {
-        const result = await register(formData);
+            const result = await register(formData);
             if ('data' in result) {
                 setSuccess(true);
                 setFormData({
@@ -44,7 +49,21 @@ export default function Auth() {
                 });
             }
         } else {
-            console.log('Login submitted', formData);
+            const { email, password } = formData;
+            const result = await login({ email, password });
+            if ('data' in result && result.data) {
+                setFormData({
+                    nickname: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: '',
+                });
+                if (result.data.user) {
+                    router.push("/game");
+                } else {
+                    console.error('User data is missing in auth response');
+                }
+            }
         }
     }
     
@@ -58,7 +77,7 @@ export default function Auth() {
                 {error && <p className="text-red p-6 pb-0 md:p-8 md:pb-0">{('data' in error) ? (error.data as string) : 'Registration failed'}</p>}
                 {success && <p className="text-green p-6 pb-0 md:p-8 md:pb-0">User successfully registered! Confirm your email.</p>}
                 {(activeItem === "Login")
-                ? <Login formData={formData} setFormData={setFormData} />
+                ? <Login formData={formData} setFormData={setFormData} isLoading={isLoading} />
                 : <Registration formData={formData} setFormData={setFormData} isLoading={isLoading}/>}
             </form>
         </section>

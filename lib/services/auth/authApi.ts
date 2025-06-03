@@ -14,6 +14,11 @@ export interface RegisterRequest {
     confirmPassword: string,
 }
 
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
 async function checkUserExists(email: string): Promise<boolean> {
     const { data, error } = await supabase
         .from('profiles')
@@ -72,18 +77,10 @@ export const authApi = createApi({
                         }
                     });
 
-                    if (authError) {
+                    if (authError || !data.user) {
                         const rtkError: FetchBaseQueryError = {
-                            status: authError.status || 500,
-                            data: authError.message || 'Authentication error',
-                        };
-                        return { error: rtkError };
-                    }
-
-                    if (!data.user) {
-                        const rtkError: FetchBaseQueryError = {
-                            status: 500,
-                            data: 'User creation failed',
+                            status: authError?.status || 500,
+                            data: authError?.message || 'Authentication error',
                         };
                         return { error: rtkError };
                     }
@@ -92,13 +89,47 @@ export const authApi = createApi({
                 } catch (error) {
                     const rtkError: FetchBaseQueryError = {
                         status: 500,
-                        data: 'Unknown error occured'
+                        data: 'Registration failed'
                     };
                     return { error: rtkError };
                 }
             }
-        })
+        }),
+        login: build.mutation<AuthResponse, LoginRequest>({
+            queryFn: async (userData) => {
+                try {
+                    const { data, error: authError } = await supabase.auth.signInWithPassword({
+                        email: userData.email,
+                        password: userData.password,
+                    });
+
+                    if (authError) {
+                        const rtkError: FetchBaseQueryError = {
+                            status: authError.status || 401,
+                            data: authError.message || 'Authentication error',
+                        };
+                        return { error: rtkError };
+                    }
+
+                    if (!data.session || !data.user) {
+                        const rtkError: FetchBaseQueryError = {
+                            status: 401,
+                            data: 'Invalid email or password',
+                        };
+                        return { error: rtkError };
+                    }
+
+                    return { data };
+                } catch (error) {
+                    const rtkError: FetchBaseQueryError = {
+                        status: 500,
+                        data: 'Login failed'
+                    };
+                    return { error: rtkError };
+                }
+            }
+        }),
     })
 })
 
-export const { useRegisterMutation } = authApi;
+export const { useRegisterMutation, useLoginMutation } = authApi;

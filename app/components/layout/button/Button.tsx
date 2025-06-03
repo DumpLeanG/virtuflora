@@ -64,7 +64,7 @@ export default function Button(props: StandardButtonType | ArrowButtonType | Tex
             bg-green hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-2/50 md:disabled:hover:drop-shadow-3/50 
             disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
         >
-            {props.type === 'login' ? "Login" : props.type === "register" ? props.disabled ? "Registering" : "Register" : props.completed ? "Claimed" : "Claim"}
+            {props.type === 'login' ? (props.disabled ? "Loginning" : "Login") : props.type === "register" ? (props.disabled ? "Registering" : "Register") : props.completed ? "Claimed" : "Claim"}
         </button>
         : props.type === 'exit' ?
         <button onClick={props.onClick} 

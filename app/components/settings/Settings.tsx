@@ -3,15 +3,24 @@
 import Button from "../layout/button/Button";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import SettingsItem from "./SettingsItem";
+import { useAppDispatch } from "@/lib/hooks/hooks";
+import { logout } from "@/lib/features/player/playerSlice";
+import { supabase } from "@/lib/supabase/supabaseClient";
 
 interface SettingsProps {
   handleOutsideClick: () => void;
 }
 
 export default function Settings({ handleOutsideClick } : SettingsProps) {
+  const dispatch = useAppDispatch();
   const ref = useOutsideClick<HTMLDivElement>(() => {
       handleOutsideClick();
   })
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    dispatch(logout());
+  }
 
   return (
     <div className="fixed w-full h-screen top-0 left-0 bg-black/70 p-4 z-2 flex items-center justify-center">
@@ -26,7 +35,7 @@ export default function Settings({ handleOutsideClick } : SettingsProps) {
             <SettingsItem type="theme"/>
             <SettingsItem type="control"/>
         </div>
-        <Button type="exit"/>
+        <Button type="exit" onClick={handleLogout}/>
       </div>
     </div>
   );
