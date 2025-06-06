@@ -1,6 +1,6 @@
 "use client";
 
-import { useRegisterMutation } from '@/lib/services/auth/authApi';
+import { useRegisterMutation } from '@/lib/services/user/userApi';
 import Button from '../layout/button/Button';
 import Input from '../layout/input/Input';
 import { AuthFormProps } from '@/lib/types/auth';

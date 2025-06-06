@@ -4,9 +4,10 @@ import { screenSlice } from "./features/screen/screenSlice";
 import { gardenSlice } from "./features/garden/gardenSlice";
 import { playerSlice } from "./features/player/playerSlice";
 import { plantsApi } from "./services/plants/plantsApi";
-import { authApi } from "./services/auth/authApi";
+import { userApi } from "./services/user/userApi";
+import { inventoryApi } from "./services/inventory/inventoryApi";
 
-const rootReducer = combineSlices(screenSlice, gardenSlice, playerSlice, plantsApi, authApi);
+const rootReducer = combineSlices(screenSlice, gardenSlice, playerSlice, plantsApi, userApi, inventoryApi);
 export type RootState = ReturnType<typeof rootReducer>;
 
 export const makeStore = () => {
@@ -15,7 +16,8 @@ export const makeStore = () => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
         .concat(plantsApi.middleware)
-        .concat(authApi.middleware)
+        .concat(userApi.middleware)
+        .concat(inventoryApi.middleware)
   });
 };
 

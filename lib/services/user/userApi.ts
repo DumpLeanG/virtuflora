@@ -1,6 +1,7 @@
-import { createApi, fetchBaseQuery, type FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { supabase } from '../../supabase/supabaseClient';
 import { User, Session } from '@supabase/supabase-js';
+import { createSelector } from '@reduxjs/toolkit';
 
 export interface AuthResponse {
   user: User | null;
@@ -33,17 +34,16 @@ async function checkUserExists(email: string): Promise<boolean> {
     return data !== null;
 }
 
-
-export const authApi = createApi({
-    reducerPath: 'authApi',
+export const userApi = createApi({
+    reducerPath: 'userApi',
     baseQuery: fetchBaseQuery(),
-    tagTypes: ['Auth'],
+    tagTypes: ['User'],
     endpoints: (build) => ({
         register: build.mutation<AuthResponse, RegisterRequest>({
             queryFn: async (userData) => {
                 try{
                     if (userData.password !== userData.confirmPassword) {
-                        const validationError: FetchBaseQueryError = {
+                        const validationError = {
                             status: 400,
                             data: 'Passwords do not match',
                         };
@@ -51,7 +51,7 @@ export const authApi = createApi({
                     }
                 
                     if (userData.password.length < 8) {
-                        const validationError: FetchBaseQueryError = {
+                        const validationError = {
                             status: 400,
                             data: 'Password must be at least 8 characters long',
                         };
@@ -60,7 +60,7 @@ export const authApi = createApi({
 
                     const userExists = await checkUserExists(userData.email);
                     if (userExists) {
-                        const validationError: FetchBaseQueryError = {
+                        const validationError = {
                             status: 400,
                             data: 'User with this email already exists',
                         };
@@ -73,12 +73,13 @@ export const authApi = createApi({
                         options: {
                             data: {
                                 nickname: userData.nickname,
+                                balance: 4,
                             }
                         }
                     });
 
                     if (authError || !data.user) {
-                        const rtkError: FetchBaseQueryError = {
+                        const rtkError = {
                             status: authError?.status || 500,
                             data: authError?.message || 'Authentication error',
                         };
@@ -87,7 +88,7 @@ export const authApi = createApi({
 
                     return { data: data };
                 } catch (error) {
-                    const rtkError: FetchBaseQueryError = {
+                    const rtkError = {
                         status: 500,
                         data: 'Registration failed'
                     };
@@ -104,7 +105,7 @@ export const authApi = createApi({
                     });
 
                     if (authError) {
-                        const rtkError: FetchBaseQueryError = {
+                        const rtkError = {
                             status: authError.status || 401,
                             data: authError.message || 'Authentication error',
                         };
@@ -112,7 +113,7 @@ export const authApi = createApi({
                     }
 
                     if (!data.session || !data.user) {
-                        const rtkError: FetchBaseQueryError = {
+                        const rtkError = {
                             status: 401,
                             data: 'Invalid email or password',
                         };
@@ -121,7 +122,7 @@ export const authApi = createApi({
 
                     return { data };
                 } catch (error) {
-                    const rtkError: FetchBaseQueryError = {
+                    const rtkError = {
                         status: 500,
                         data: 'Login failed'
                     };
@@ -129,7 +130,74 @@ export const authApi = createApi({
                 }
             }
         }),
+        getCurrentUser: build.query<User | null, void>({
+            queryFn: async () => {
+                try {
+                    const { data: { user }, error } = await supabase.auth.getUser();
+                    if (error) {
+                        if (error.status === 401) {
+                            return { data: null };
+                        }
+                        return { error: { status: 500, data: error.message } };
+                    }
+                    return { data: user };
+                } catch (error) {
+                    return { error: { status: 500, data: 'Failed to fetch user' } };
+                }
+            },
+            providesTags: ['User'],
+        }),
+        logout: build.mutation<boolean, void>({
+            queryFn: async () => {
+                try {
+                    const { error } = await supabase.auth.signOut();
+                    if (error) {
+                        return { error: { status: 500, data: error.message } };
+                    }
+                    return { data: true };
+                } catch (error) {
+                    return { error: { status: 500, data: 'Logout failed' } };
+                }
+            },
+        }),
+        updateBalance: build.mutation<{ balance: number}, { balance: number}>({
+            queryFn: async (payload) => {
+                try {
+                    const { data: { user }, error} = await supabase.auth.updateUser({
+                        data: {
+                            balance: payload.balance,
+                        }
+                    })
+
+                    if(error || !user) {
+                        return {
+                            error: {
+                                status: error?.status || 500,
+                                data: error?.message || 'Balance update failed',
+                            }
+                        }
+                    }
+
+                    return { data: { balance: user.user_metadata.balance } };
+                } catch (error) {
+                    return {
+                        error: {
+                            status: 500,
+                            data: 'Failed to update balance'
+                        }
+                    }
+                }
+            },
+            invalidatesTags: ['User'],
+        })
     })
 })
 
-export const { useRegisterMutation, useLoginMutation } = authApi;
+const selectCurrentUserResult = userApi.endpoints.getCurrentUser.select();
+
+export const selectCurrentUserId = createSelector(
+  selectCurrentUserResult,
+  (userResult: any) => userResult.data?.id || null
+);
+
+export const { useRegisterMutation, useLoginMutation, useGetCurrentUserQuery, useLogoutMutation } = userApi;

@@ -1,6 +1,6 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { InventoryItem, ShopItem } from "@/lib/types/plants";
+import type { InventoryItem, PlantDefinition } from "@/lib/types/plants";
 import { User } from "@supabase/supabase-js";
 
 interface PlayerState {
@@ -13,7 +13,7 @@ interface PlayerState {
 const initialState: PlayerState = {
   user: null,
   isAuthenticated: false,
-  balance: 0,
+  balance: 4,
   inventory: [],
 };
 
@@ -21,8 +21,8 @@ export const playerSlice = createAppSlice({
   name: "player",
   initialState,
   reducers: {
-    buyPlant: (state, action: PayloadAction<InventoryItem & ShopItem>) => {
-      const { name, rarity, price, amount } = action.payload;
+    buyPlant: (state, action: PayloadAction<InventoryItem & PlantDefinition>) => {
+      const { id, name, rarity, price, amount } = action.payload;
       if (state.balance >= price) {
         state.balance -= price;
         const plantIndex = state.inventory.findIndex(p => p.name === name);
@@ -30,6 +30,7 @@ export const playerSlice = createAppSlice({
           state.inventory[plantIndex].amount += 1;
         } else {
           state.inventory.push({
+            id,
             name,
             rarity,
             amount,
@@ -47,15 +48,7 @@ export const playerSlice = createAppSlice({
     addMoney: (state, action: PayloadAction<PlayerState['balance']>) => {
       state.balance += action.payload;
     },
-    setUser: (state, action: PayloadAction<PlayerState['user']>) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
-    },
-    logout: (state) => {
-      state.user = null;
-      state.isAuthenticated = false;
-    },
-  }
+  },
 });
 
-export const { buyPlant, decreasePlantAmount, addMoney, setUser, logout } = playerSlice.actions;
+export const { buyPlant, decreasePlantAmount, addMoney } = playerSlice.actions;

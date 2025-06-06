@@ -3,23 +3,27 @@
 import Button from "../layout/button/Button";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import SettingsItem from "./SettingsItem";
-import { useAppDispatch } from "@/lib/hooks/hooks";
-import { logout } from "@/lib/features/player/playerSlice";
-import { supabase } from "@/lib/supabase/supabaseClient";
+import { useLogoutMutation } from "@/lib/services/user/userApi";
+import { useRouter } from "next/navigation";
 
 interface SettingsProps {
   handleOutsideClick: () => void;
 }
 
 export default function Settings({ handleOutsideClick } : SettingsProps) {
-  const dispatch = useAppDispatch();
+  const [logout] = useLogoutMutation();
+  const router = useRouter();
   const ref = useOutsideClick<HTMLDivElement>(() => {
       handleOutsideClick();
-  })
+  });
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    dispatch(logout());
+    try {
+    await logout();
+    router.push("/");
+  } catch (error) {
+    console.error('Failed to logout. Please try again.');
+  }
   }
 
   return (

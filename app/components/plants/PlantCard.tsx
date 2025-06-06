@@ -35,13 +35,14 @@ export default function PlantCard(props : PlantCardProps) {
   const handleClick = () => {
     if (props.type === "inventory" && props.amount && props.amount > 0) {
       dispatch(selectPlant({ 
+        id: props.id,
         name: props.name, 
         rarity: props.rarity, 
         stage: "seed" 
       }));
     }
     else if (props.type === "shop" && props.price) {
-      dispatch(buyPlant({ name: props.name, rarity: props.rarity, price: props.price, amount: 1 }));
+      dispatch(buyPlant({ id: props.id, name: props.name, rarity: props.rarity, price: props.price, amount: 1 }));
     }
   };
 

@@ -2,24 +2,23 @@ export type Rarity = 'common' | 'rare' | 'epic' | 'legendary';
 export type PlantStage = 'seed' | 'sprout' | 'flower';
 
 export interface PlantBase {
+  id: number;
   name: string;
   rarity: Rarity;
 }
 
-export interface GrowingPlant extends PlantBase {
+export interface GardenPlant extends PlantBase {
   stage: PlantStage;
 }
 
-export interface InventoryItem extends PlantBase {
+export interface InventoryItem {
+  id: number;
+  userId: string;
+  plantId: number;
   amount: number;
 }
 
-export interface ShopItem extends PlantBase {
+export interface PlantDefinition extends PlantBase {
+  growthTime: number;
   price: number;
-}
-
-export interface PlantDefinition extends GrowingPlant {
-    id: number;
-    growthTime: number;
-    price: number;
 }

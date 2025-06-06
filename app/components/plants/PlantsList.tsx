@@ -8,7 +8,17 @@ import { selectWidthBreakpoint } from "@/lib/features/screen/screenSlice";
 import { useAppSelector } from "@/lib/hooks/hooks";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { useGetPlantsQuery } from "@/lib/services/plants/plantsApi";
+import { selectCurrentUserId } from "@/lib/services/user/userApi";
+import { useGetInventoryQuery } from "@/lib/services/inventory/inventoryApi";
 
+const getRarityOrder = (rarity: string) => {
+  switch (rarity) {
+    case 'rare': return 1;
+    case 'epic': return 2;
+    case 'legendary': return 3;
+    default: return 0;
+  }
+};
 
 export default function PlantsList(props: {side: 'right' | 'left', type: 'inventory' | 'shop'}) {
   const [isOpened, setIsOpened] = useState(false);
@@ -18,17 +28,48 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
   const [currentPage, setCurrentPage] = useState(1);
   let itemsPerPage = widthBP === 'xs' || widthBP === 'sm' ? 24 : widthBP === 'md' || widthBP === 'lg' ? 36 : widthBP === 'xl' ? 15 : 20;
 
-  const { data: plants = [], isLoading } = useGetPlantsQuery();
+  const userId = useAppSelector(selectCurrentUserId);
+  const { data: plants = [], isLoading: isShopLoading } = useGetPlantsQuery();
+  const { data: pervInventory = [], isLoading: isInventoryLoading } = useGetInventoryQuery(userId);
 
-  const inventory = useAppSelector((state) => state.player.inventory);
+  const isLoading = isShopLoading && isInventoryLoading;
+  const inventory = pervInventory.map(item => {
+    const plant = plants.find(p => p.id === item.id);
+    return {
+      ...item,
+      name: plant?.name || "Unknown",
+      rarity: plant?.rarity || "common",
+    };
+  });
+
+  const sortedShop = [...plants].sort((a, b) => {
+    const rarityOrderA = getRarityOrder(a.rarity);
+    const rarityOrderB = getRarityOrder(b.rarity);
+
+    if (rarityOrderA !== rarityOrderB) {
+      return rarityOrderA - rarityOrderB;
+    }
+    
+    return a.id - b.id;
+  });
+  const sortedInventory = [...inventory].sort((a, b) => {
+    const rarityOrderA = getRarityOrder(a.rarity);
+    const rarityOrderB = getRarityOrder(b.rarity);
+
+    if (rarityOrderA !== rarityOrderB) {
+      return rarityOrderA - rarityOrderB;
+    }
+    
+    return a.id - b.id;
+  })
 
   const pageFirstIndex = (currentPage - 1) * itemsPerPage;
   const shopItems = props.type === "shop" 
-    ? plants.slice(pageFirstIndex, pageFirstIndex + itemsPerPage) 
+    ? sortedShop.slice(pageFirstIndex, pageFirstIndex + itemsPerPage) 
     : [];
   
   const inventoryItems = props.type === "inventory" 
-    ? inventory.slice(pageFirstIndex, pageFirstIndex + itemsPerPage)
+    ? sortedInventory.slice(pageFirstIndex, pageFirstIndex + itemsPerPage)
     : [];
 
   return (
@@ -49,15 +90,17 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
                   ? inventoryItems.map((plant, index) => (
                       <PlantCard 
                         key={index} 
+                        id={plant.id}
                         type={props.type} 
                         name={plant.name} 
                         rarity={plant.rarity} 
-                        amount={plant.amount}
+                        price={plant.amount}
                       />
                     ))
-                  : shopItems.map((plant, index) => (
+                  : shopItems.map((plant) => (
                       <PlantCard 
-                        key={index} 
+                        key={plant.id} 
+                        id={plant.id}
                         type={props.type} 
                         name={plant.name} 
                         rarity={plant.rarity} 
@@ -86,15 +129,17 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
                   ? inventoryItems.map((plant, index) => (
                       <PlantCard 
                         key={index} 
+                        id={plant.id}
                         type={props.type} 
                         name={plant.name} 
                         rarity={plant.rarity} 
-                        amount={plant.amount}
+                        price={plant.amount}
                       />
                     ))
-                  : shopItems.map((plant, index) => (
+                  : shopItems.map((plant) => (
                       <PlantCard 
-                        key={index} 
+                        key={plant.id} 
+                        id={plant.id}
                         type={props.type} 
                         name={plant.name} 
                         rarity={plant.rarity} 

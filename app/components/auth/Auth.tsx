@@ -3,8 +3,9 @@
 import Login from './Login';
 import Registration from './Registration';
 import React, { useState } from 'react';
-import { useLoginMutation, useRegisterMutation } from '@/lib/services/auth/authApi';
+import { useLoginMutation, userApi, useRegisterMutation } from '@/lib/services/user/userApi';
 import { useRouter } from "next/navigation";
+import { useAppDispatch } from '@/lib/hooks/hooks';
 
 type ActiveItem = "Login" | "Registration";
 
@@ -17,7 +18,10 @@ export default function Auth() {
         password: '',
         confirmPassword: '',
     })
+
     const router = useRouter();
+    const dispatch = useAppDispatch();
+
     const [register, { error: registrationError, isLoading: isRegistrationLoading }] = useRegisterMutation();
     const [login, { error: loginError, isLoading: isLoginLoading }] = useLoginMutation();
     
@@ -52,16 +56,17 @@ export default function Auth() {
             const { email, password } = formData;
             const result = await login({ email, password });
             if ('data' in result && result.data) {
+                dispatch(userApi.util.invalidateTags(['User']));
+                
                 setFormData({
                     nickname: '',
                     email: '',
                     password: '',
                     confirmPassword: '',
                 });
+                
                 if (result.data.user) {
                     router.push("/game");
-                } else {
-                    console.error('User data is missing in auth response');
                 }
             }
         }

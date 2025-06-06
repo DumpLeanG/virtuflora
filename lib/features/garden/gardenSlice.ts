@@ -1,15 +1,15 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { GrowingPlant } from "@/lib/types/plants";
+import type { GardenPlant } from "@/lib/types/plants";
 
 export interface GardenBed {
   id: string;
-  plant: GrowingPlant | null;
+  plant: GardenPlant | null;
 }
 
 interface GardenState { 
   beds: GardenBed[];
-  selectedPlant: GrowingPlant | null;
+  selectedPlant: GardenPlant | null;
   isPlanting: boolean;
 };
 
@@ -26,7 +26,7 @@ export const gardenSlice = createAppSlice({
   name: "garden",
   initialState,
   reducers: { 
-    selectPlant: (state, action: PayloadAction<GrowingPlant>) => {
+    selectPlant: (state, action: PayloadAction<GardenPlant>) => {
       state.selectedPlant = action.payload;
       state.isPlanting = true;
     },
