@@ -1,7 +1,7 @@
 import Button from "../layout/button/Button";
 import Image from "next/image";
 
-export default function Achievement( props : {completed?: true | false, disabled?: true | false} ) {
+export default function Achievement( props : {completed?: boolean, disabled?: boolean} ) {
 
   return (
     <div className="flex flex-wrap gap-4 md:gap-6 p-4 md:p-6 bg-dark-beige border-2 md:border-3 border-black rounded-sm">

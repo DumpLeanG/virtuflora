@@ -2,8 +2,8 @@ import Image from "next/image";
 import React from "react";
 
 interface ButtonType {
-    disabled?: true | false;
-    onClick?: any;
+    disabled?: boolean;
+    onClick?: React.MouseEventHandler<HTMLButtonElement>;
     className?: string;
 }
 
@@ -14,12 +14,12 @@ interface StandardButtonType extends ButtonType {
 interface ArrowButtonType extends ButtonType {
     type: 'arrow';
     arrowType: 'prev' | 'next';
-    isAbsolute?: true | false;
+    isAbsolute?: boolean;
 }
 
 interface TextButtonType extends ButtonType {
     type: 'claim' | 'exit' | 'login' | 'register';
-    completed?: true | false;
+    completed?: boolean;
 }
 
 const colors = {

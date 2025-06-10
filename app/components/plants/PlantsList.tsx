@@ -34,7 +34,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
 
   const isLoading = isShopLoading && isInventoryLoading;
   const inventory = pervInventory.map(item => {
-    const plant = plants.find(p => p.id === item.id);
+    const plant = plants.find(p => p.id === item.plantId);
     return {
       ...item,
       name: plant?.name || "Unknown",
@@ -87,27 +87,27 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
               <>
                 <div className="grid grid-cols-3 2xl:grid-cols-4 gap-6 content-start">
                   {props.type === "inventory" 
-                  ? inventoryItems.map((plant, index) => (
+                  ? inventoryItems.map((plant) => (
                       <PlantCard 
-                        key={index} 
+                        key={plant.id}
                         id={plant.id}
-                        type={props.type} 
+                        type="inventory"
                         name={plant.name} 
                         rarity={plant.rarity} 
-                        price={plant.amount}
+                        amount={plant.amount}
                       />
                     ))
                   : shopItems.map((plant) => (
                       <PlantCard 
                         key={plant.id} 
                         id={plant.id}
-                        type={props.type} 
+                        type="shop"
                         name={plant.name} 
                         rarity={plant.rarity} 
                         price={plant.price}
                       />
                     ))
-                  } 
+                  }
                 </div>
                 <div className="flex justify-center gap-6">
                   <Button type="arrow" arrowType="prev" className="relative bg-beige" onClick={() => setCurrentPage(page => page - 1)} disabled={currentPage === 1}/>
@@ -126,21 +126,21 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
             :
               <>
                 {props.type === "inventory" 
-                  ? inventoryItems.map((plant, index) => (
+                  ? inventoryItems.map((plant) => (
                       <PlantCard 
-                        key={index} 
+                        key={plant.id}
                         id={plant.id}
-                        type={props.type} 
+                        type="inventory"
                         name={plant.name} 
                         rarity={plant.rarity} 
-                        price={plant.amount}
+                        amount={plant.amount}
                       />
                     ))
                   : shopItems.map((plant) => (
                       <PlantCard 
                         key={plant.id} 
                         id={plant.id}
-                        type={props.type} 
+                        type="shop"
                         name={plant.name} 
                         rarity={plant.rarity} 
                         price={plant.price}

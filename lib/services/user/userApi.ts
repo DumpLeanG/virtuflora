@@ -20,6 +20,11 @@ export interface LoginRequest {
     password: string;
 }
 
+export interface UpdateBalanceRequest {
+    price: number;
+    balance: number;
+}
+
 async function checkUserExists(email: string): Promise<boolean> {
     const { data, error } = await supabase
         .from('profiles')
@@ -43,31 +48,34 @@ export const userApi = createApi({
             queryFn: async (userData) => {
                 try{
                     if (userData.password !== userData.confirmPassword) {
-                        const validationError = {
-                            status: 400,
-                            data: 'Passwords do not match',
+                        return {
+                            error: {
+                                status: 400,
+                                data: 'Passwords do not match',
+                            }
                         };
-                        return { error: validationError };
                     }
                 
                     if (userData.password.length < 8) {
-                        const validationError = {
-                            status: 400,
-                            data: 'Password must be at least 8 characters long',
+                        return {
+                            error: {
+                                status: 400,
+                                data: 'Password must be at least 8 characters long',
+                            }
                         };
-                        return { error: validationError };
                     }
 
                     const userExists = await checkUserExists(userData.email);
                     if (userExists) {
-                        const validationError = {
-                            status: 400,
-                            data: 'User with this email already exists',
+                        return {
+                            error: {
+                                status: 400,
+                                data: 'User with this email already exists',
+                            }
                         };
-                        return { error: validationError };
                     }
 
-                    const { data, error: authError } = await supabase.auth.signUp({
+                    const { data, error } = await supabase.auth.signUp({
                         email: userData.email,
                         password: userData.password,
                         options: {
@@ -78,55 +86,60 @@ export const userApi = createApi({
                         }
                     });
 
-                    if (authError || !data.user) {
-                        const rtkError = {
-                            status: authError?.status || 500,
-                            data: authError?.message || 'Authentication error',
-                        };
-                        return { error: rtkError };
+                    if (error || !data.user) {
+                        return { 
+                            error: {
+                                status: error?.status || 500,
+                                data: error?.message || 'Authentication error',
+                            }
+                        }
                     }
 
                     return { data: data };
                 } catch (error) {
-                    const rtkError = {
-                        status: 500,
-                        data: 'Registration failed'
-                    };
-                    return { error: rtkError };
+                    return { 
+                        error: {
+                            status: 500,
+                            data: 'Registration failed'
+                        }
+                    }
                 }
             }
         }),
         login: build.mutation<AuthResponse, LoginRequest>({
             queryFn: async (userData) => {
                 try {
-                    const { data, error: authError } = await supabase.auth.signInWithPassword({
+                    const { data, error } = await supabase.auth.signInWithPassword({
                         email: userData.email,
                         password: userData.password,
                     });
 
-                    if (authError) {
-                        const rtkError = {
-                            status: authError.status || 401,
-                            data: authError.message || 'Authentication error',
-                        };
-                        return { error: rtkError };
+                    if (error) {
+                        return {
+                            error: {
+                                status: error.status || 401,
+                                data: error.message || 'Authentication error',
+                            }
+                        }
                     }
 
                     if (!data.session || !data.user) {
-                        const rtkError = {
-                            status: 401,
-                            data: 'Invalid email or password',
-                        };
-                        return { error: rtkError };
+                        return {
+                            error: {
+                                status: 401,
+                                data: 'Invalid email or password',
+                            }
+                        }
                     }
 
                     return { data };
                 } catch (error) {
-                    const rtkError = {
-                        status: 500,
-                        data: 'Login failed'
-                    };
-                    return { error: rtkError };
+                    return {
+                        error: {
+                            status: 500,
+                            data: 'Login failed'
+                        }
+                    }
                 }
             }
         }),
@@ -135,14 +148,21 @@ export const userApi = createApi({
                 try {
                     const { data: { user }, error } = await supabase.auth.getUser();
                     if (error) {
-                        if (error.status === 401) {
-                            return { data: null };
-                        }
-                        return { error: { status: 500, data: error.message } };
+                        return {
+                            error: {
+                                status: error.status || 500,
+                                data: error.message
+                            }
+                        };
                     }
                     return { data: user };
                 } catch (error) {
-                    return { error: { status: 500, data: 'Failed to fetch user' } };
+                    return { 
+                        error: {
+                            status: 500, 
+                            data: 'Failed to fetch user'
+                        }
+                    }
                 }
             },
             providesTags: ['User'],
@@ -152,20 +172,33 @@ export const userApi = createApi({
                 try {
                     const { error } = await supabase.auth.signOut();
                     if (error) {
-                        return { error: { status: 500, data: error.message } };
+                        return {
+                            error: {
+                                status: error.status || 500,
+                                data: error.message
+                            }
+                        };
                     }
                     return { data: true };
                 } catch (error) {
-                    return { error: { status: 500, data: 'Logout failed' } };
+                    return { 
+                        error: {
+                            status: 500, 
+                            data: 'Logout failed' 
+                        } 
+                    };
                 }
             },
         }),
-        updateBalance: build.mutation<{ balance: number}, { balance: number}>({
+        updateBalance: build.mutation<{ balance: number}, UpdateBalanceRequest>({
             queryFn: async (payload) => {
                 try {
+                    const currentBalance = payload.balance;
+                    const newBalance = currentBalance - payload.price;
+
                     const { data: { user }, error} = await supabase.auth.updateUser({
                         data: {
-                            balance: payload.balance,
+                            balance: newBalance,
                         }
                     })
 
@@ -183,7 +216,7 @@ export const userApi = createApi({
                     return {
                         error: {
                             status: 500,
-                            data: 'Failed to update balance'
+                            data: 'Unknown error occurred',
                         }
                     }
                 }
@@ -200,4 +233,9 @@ export const selectCurrentUserId = createSelector(
   (userResult: any) => userResult.data?.id || null
 );
 
-export const { useRegisterMutation, useLoginMutation, useGetCurrentUserQuery, useLogoutMutation } = userApi;
+export const selectCurrentUserBalance = createSelector(
+  selectCurrentUserResult,
+  (userResult: any) => userResult.data?.user_metadata.balance || null
+);
+
+export const { useRegisterMutation, useLoginMutation, useGetCurrentUserQuery, useLogoutMutation, useUpdateBalanceMutation } = userApi;

@@ -15,20 +15,22 @@ export const plantsApi = createApi({
                         .select('*');
 
                     if (error) {
-                        const rtkError = {
-                            status: error.code ? parseInt(error.code) : 500,
-                            data: error.message,
+                        return { 
+                            error: {
+                                status: error.code ? parseInt(error.code) : 500,
+                                data: error.message,
+                            } 
                         };
-                        return { error: rtkError };
                     }
 
                     return { data: plants };
                 } catch (error) {
-                    const rtkError = {
-                        status: 500,
-                        data: 'Unknown error occurred',
-                    };
-                    return { error: rtkError };
+                    return {
+                        error: {
+                            status: 500,
+                            data: 'Unknown error occurred',
+                        }
+                    }
                 }
             },
         })

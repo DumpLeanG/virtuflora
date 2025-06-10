@@ -12,8 +12,7 @@ interface Props {
 
 export default function GameLayout({ children }: Props) {
   const router = useRouter();
-  const { data: user, isLoading, isError, error } = useGetCurrentUserQuery();
-  console.log(error);
+  const { data: user, isLoading, isError } = useGetCurrentUserQuery();
 
   useEffect(() => {
     if (!isLoading && (!user || isError)) {

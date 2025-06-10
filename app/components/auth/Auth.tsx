@@ -57,7 +57,7 @@ export default function Auth() {
             const result = await login({ email, password });
             if ('data' in result && result.data) {
                 dispatch(userApi.util.invalidateTags(['User']));
-                
+                setSuccess(true);
                 setFormData({
                     nickname: '',
                     email: '',
@@ -80,7 +80,7 @@ export default function Auth() {
                     <span className={`cursor-pointer p-6 md:p-8 w-full text-center ${activeItem === "Registration" && "bg-beige border-b-2 md:border-b-3 border-green"}`} onClick={() => handleChangeActiveItem("Registration")}>Registration</span>
                 </div>
                 {error && <p className="text-red p-6 pb-0 md:p-8 md:pb-0">{('data' in error) ? (error.data as string) : 'Registration failed'}</p>}
-                {success && <p className="text-green p-6 pb-0 md:p-8 md:pb-0">User successfully registered! Confirm your email.</p>}
+                {success && <p className="text-green p-6 pb-0 md:p-8 md:pb-0">{activeItem === "Login" ? "Successful authorization! Loginning to the game." : "User successfully registered! Confirm your email."}</p>}
                 {(activeItem === "Login")
                 ? <Login formData={formData} setFormData={setFormData} isLoading={isLoading} />
                 : <Registration formData={formData} setFormData={setFormData} isLoading={isLoading}/>}
