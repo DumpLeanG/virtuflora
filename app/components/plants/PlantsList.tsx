@@ -3,7 +3,7 @@
 import PlantCard from "./PlantCard";
 import Line from "./Line";
 import Button from "../layout/button/Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { selectWidthBreakpoint } from "@/lib/features/screen/screenSlice";
 import { useAppSelector } from "@/lib/hooks/hooks";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
@@ -24,7 +24,14 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
   const [isOpened, setIsOpened] = useState(false);
   const widthBP = useAppSelector(selectWidthBreakpoint);
   const ref = useOutsideClick<HTMLDivElement>(() => setIsOpened(false));
+  const { selectedPlant } = useAppSelector((state) => state.gardenUI);
 
+  useEffect(() => {
+    if(selectedPlant && (widthBP !== 'xl' && widthBP !== '2xl')) {
+      setIsOpened(false);
+    }
+  }, [selectedPlant])
+  
   const [currentPage, setCurrentPage] = useState(1);
   let itemsPerPage = widthBP === 'xs' || widthBP === 'sm' ? 24 : widthBP === 'md' || widthBP === 'lg' ? 36 : widthBP === 'xl' ? 15 : 20;
 
@@ -90,7 +97,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
                   ? inventoryItems.map((plant) => (
                       <PlantCard 
                         key={plant.id}
-                        id={plant.id}
+                        id={plant.plantId}
                         type="inventory"
                         name={plant.name} 
                         rarity={plant.rarity} 
@@ -129,7 +136,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
                   ? inventoryItems.map((plant) => (
                       <PlantCard 
                         key={plant.id}
-                        id={plant.id}
+                        id={plant.plantId}
                         type="inventory"
                         name={plant.name} 
                         rarity={plant.rarity} 

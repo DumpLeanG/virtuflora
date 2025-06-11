@@ -5,13 +5,32 @@ import Button from "../layout/button/Button";
 import { selectWidthBreakpoint } from "@/lib/features/screen/screenSlice";
 import { useAppSelector } from "@/lib/hooks/hooks";
 import { useState } from "react";
-import { selectCurrentUserBalance } from "@/lib/services/user/userApi";
+import { selectCurrentUserBalance, selectCurrentUserId } from "@/lib/services/user/userApi";
+import { useGetGardenQuery } from "@/lib/services/garden/gardenApi";
+import { useGetPlantsQuery } from "@/lib/services/plants/plantsApi";
 
 export default function Garden() {
   const widthBP = useAppSelector(selectWidthBreakpoint);
   const [currentPage, setCurrentPage] = useState(1);
-  const { beds } = useAppSelector((state) => state.garden);
+
   const balance = useAppSelector(selectCurrentUserBalance);
+  const userId = useAppSelector(selectCurrentUserId);
+
+  const { data: gardenPlants = [] } = useGetGardenQuery(userId);
+  const { data: allPlants = [] } = useGetPlantsQuery();
+
+  const plantMap = new Map(allPlants.map(plant => [plant.id, plant]));
+
+  const beds = Array.from({ length: 36 }, (bed, index) => {
+    const gardenPlant = gardenPlants.find(p => p.gardenBed === index);
+    if (!gardenPlant) return null;
+    
+    const plantData = plantMap.get(gardenPlant.plantId);
+    return plantData ? {
+      ...gardenPlant,
+      ...plantData
+    } : null;
+  });
 
   const itemsPerPage = 24;
   const pageFirstIndex = (currentPage - 1) * itemsPerPage;
@@ -20,12 +39,12 @@ export default function Garden() {
   return (
     <div className="flex flex-col gap-6 md:gap-8 w-full md:w-auto">
       <div className="relative max-w-full mx-auto justify-items-center bg-beige rounded-sm p-6 md:p-8 inline-grid grid-cols-4 sm:grid-cols-[repeat(auto-fit,minmax(48px,48px))] md:grid-cols-6 gap-6 md:gap-8 border-2 md:border-3 border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black">
-        {widthBP !== 'xs' ? beds.map((bed) => (
-          <GardenBed key={bed.id} id={bed.id} plant={bed.plant} />
+        {widthBP !== 'xs' ? beds.map((bed, index) => (
+          <GardenBed key={index} id={index} plant={bed} />
         ))
         :
-        visibleBeds.map((bed) => (
-          <GardenBed key={bed.id} id={bed.id} plant={bed.plant} />
+        visibleBeds.map((bed, index) => (
+          <GardenBed key={index} id={index} plant={bed} />
         ))}
         
         {widthBP === 'xs' && (

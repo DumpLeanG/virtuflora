@@ -1,13 +1,13 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { screenSlice } from "./features/screen/screenSlice";
-import { gardenSlice } from "./features/garden/gardenSlice";
-import { playerSlice } from "./features/player/playerSlice";
+import { gardenUISlice } from "./features/garden/gardenUISlice";
 import { plantsApi } from "./services/plants/plantsApi";
 import { userApi } from "./services/user/userApi";
 import { inventoryApi } from "./services/inventory/inventoryApi";
+import { gardenApi } from "./services/garden/gardenApi";
 
-const rootReducer = combineSlices(screenSlice, gardenSlice, playerSlice, plantsApi, userApi, inventoryApi);
+const rootReducer = combineSlices(screenSlice, gardenUISlice, plantsApi, userApi, inventoryApi, gardenApi);
 export type RootState = ReturnType<typeof rootReducer>;
 
 export const makeStore = () => {
@@ -18,6 +18,7 @@ export const makeStore = () => {
         .concat(plantsApi.middleware)
         .concat(userApi.middleware)
         .concat(inventoryApi.middleware)
+        .concat(gardenApi.middleware)
   });
 };
 
