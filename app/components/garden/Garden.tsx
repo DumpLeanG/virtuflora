@@ -27,8 +27,9 @@ export default function Garden() {
     
     const plantData = plantMap.get(gardenPlant.plantId);
     return plantData ? {
+      gardenPlantId: gardenPlant.id,
       ...gardenPlant,
-      ...plantData
+      ...plantData,
     } : null;
   });
 
@@ -52,7 +53,7 @@ export default function Garden() {
             <Button 
               type="arrow" 
               isAbsolute 
-              arrowType="prev" 
+              arrowType="prev"
               className="top-1/2 absolute -translate-y-1/2 bg-dark-beige" 
               onClick={() => setCurrentPage(page => page - 1)} 
               disabled={currentPage === 1}

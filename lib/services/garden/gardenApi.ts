@@ -8,6 +8,11 @@ interface PlantInBedRequest {
     plantId: number;
 }
 
+interface UpdateGrowthStageRequest {
+    id: number;
+    growthStage: "sprout" | "plant";
+}
+
 export const gardenApi = createApi({
     reducerPath: 'gardenApi',
     baseQuery: fetchBaseQuery(),
@@ -54,9 +59,9 @@ export const gardenApi = createApi({
             providesTags: ['Garden'],
         }),
         plantInBed: build.mutation<GardenPlant, PlantInBedRequest>({
-            async queryFn(arg) {
+            async queryFn(args) {
                 try {
-                    const { userId, gardenBed, plantId } = arg;
+                    const { userId, gardenBed, plantId } = args;
                     if (!userId) throw new Error("User ID required!");
 
                     const { data: existingItem, error: bedError } = await supabase
@@ -125,8 +130,43 @@ export const gardenApi = createApi({
                 }
             },
             invalidatesTags: ['Garden'],
+        }),
+        updateGrowthStage: build.mutation<GardenPlant, UpdateGrowthStageRequest>({
+            async queryFn(args) {
+                try {
+                    const { id, growthStage } = args;
+
+                    const {data, error} = await supabase
+                        .from('garden')
+                        .update({
+                            growth_stage: growthStage,
+                        })
+                        .eq('id', id)
+                        .select()
+                        .single();
+
+                    if(error) {
+                        return {
+                            error: {
+                                status: error.code ? parseInt(error.code) : 500,
+                                data: error.message || 'Failed to update growth stage'
+                            }
+                        }
+                    }
+
+                    return { data: data};
+                } catch (error) {
+                    return {
+                        error: {
+                            status: 500,
+                            data: 'Unknown error occurred'
+                        }
+                    };
+                }
+            },
+            invalidatesTags: ['Garden'],
         })
     })
 })
 
-export const { useGetGardenQuery, usePlantInBedMutation } = gardenApi
+export const { useGetGardenQuery, usePlantInBedMutation, useUpdateGrowthStageMutation } = gardenApi

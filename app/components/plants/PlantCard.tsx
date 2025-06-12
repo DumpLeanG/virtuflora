@@ -39,6 +39,7 @@ const colors = {
 export default function PlantCard(props : PlantCardProps) {
   const userId = useAppSelector(selectCurrentUserId);
   const balance = useAppSelector(selectCurrentUserBalance);
+  const { isPlanting } = useAppSelector((state) => state.gardenUI);
   const [addPlant] = useAddPlantMutation();
   const [updateBalance] = useUpdateBalanceMutation();
   const dispatch = useAppDispatch();
@@ -68,7 +69,7 @@ export default function PlantCard(props : PlantCardProps) {
   };
 
   const canBuy = props.type === "shop" && props.price && balance >= props.price;
-  const isDisabled = props.type === "shop" && !canBuy;
+  const isDisabled = (props.type === "shop" && !canBuy) || (props.type === "inventory" && isPlanting);;
 
   return (
     <div className={`group flex flex-col ${isDisabled ? 'opacity-50' : 'cursor-pointer'}`} onClick={!isDisabled ? handleClick : undefined}>

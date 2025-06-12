@@ -62,13 +62,22 @@ export const inventoryApi = createApi({
                     const { userId, plantId, amount } = args;
                     if (!userId) throw new Error("User ID required!");
 
-                    const { data: existingItem } = await supabase
+                    const { data: existingItems, error: fetchError } = await supabase
                         .from('inventory')
                         .select('amount')
                         .eq('user_id', userId)
                         .eq('plant_id', plantId)
-                        .single();
 
+                    if (fetchError) {
+                        return {
+                            error: {
+                                status: fetchError.code ? parseInt(fetchError.code) : 500,
+                                data: fetchError.message || 'Failed to fetch inventory item',
+                            }
+                        };
+                    }
+
+                    const existingItem = existingItems && existingItems.length > 0 ? existingItems[0] : null;
                     const newAmount = (existingItem?.amount || 0) + amount;
 
                     const { data, error } = await supabase

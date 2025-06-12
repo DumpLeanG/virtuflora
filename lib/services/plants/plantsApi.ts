@@ -10,7 +10,7 @@ export const plantsApi = createApi({
         getPlants: build.query<PlantDefinition[], void>({
             queryFn: async () => {
                 try {
-                    const { data: plants, error } = await supabase
+                    const { data, error } = await supabase
                         .from('plants')
                         .select('*');
 
@@ -22,6 +22,14 @@ export const plantsApi = createApi({
                             } 
                         };
                     }
+
+                    const plants: PlantDefinition[] = data.map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        rarity: item.rarity,
+                        growthTime: item.growth_time,
+                        price: item.price,
+                    }));
 
                     return { data: plants };
                 } catch (error) {

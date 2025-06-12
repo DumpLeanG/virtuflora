@@ -4,10 +4,12 @@ import type { GardenPlant, PlantBase } from "@/lib/types/plants";
 
 interface GardenUIState { 
   selectedPlant: PlantBase | null;
+  isPlanting: boolean;
 };
 
 const initialState: GardenUIState = {
   selectedPlant: null,
+  isPlanting: false
 };
 
 export const gardenUISlice = createAppSlice({
@@ -22,8 +24,14 @@ export const gardenUISlice = createAppSlice({
     },
     resetAfterPlanting: (state) => {
       state.selectedPlant = null;
-    }
+    },
+    startPlanting: (state) => {
+      state.isPlanting = true;
+    },
+    endPlanting: (state) => {
+      state.isPlanting = false;
+    },
   }
 });
 
-export const { selectPlant, cancelPlanting, resetAfterPlanting } = gardenUISlice.actions;
+export const { selectPlant, cancelPlanting, resetAfterPlanting, startPlanting, endPlanting } = gardenUISlice.actions;
