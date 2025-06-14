@@ -1,13 +1,14 @@
 import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { combineSlices, configureStore } from "@reduxjs/toolkit";
 import { screenSlice } from "./features/screen/screenSlice";
-import { gardenUISlice } from "./features/garden/gardenUISlice";
+import { inventoryUISlice } from "./features/inventory/inventoryUISlice";
 import { plantsApi } from "./services/plants/plantsApi";
 import { userApi } from "./services/user/userApi";
 import { inventoryApi } from "./services/inventory/inventoryApi";
 import { gardenApi } from "./services/garden/gardenApi";
+import { gardenUISlice } from "./features/garden/gardenUISlice";
 
-const rootReducer = combineSlices(screenSlice, gardenUISlice, plantsApi, userApi, inventoryApi, gardenApi);
+const rootReducer = combineSlices(screenSlice, inventoryUISlice, gardenUISlice, plantsApi, userApi, inventoryApi, gardenApi);
 export type RootState = ReturnType<typeof rootReducer>;
 
 export const makeStore = () => {

@@ -13,6 +13,11 @@ interface UpdateGrowthStageRequest {
     growthStage: "sprout" | "plant";
 }
 
+interface WaterPlantRequest {
+    plantId: number;
+    waterCount: number;
+}
+
 export const gardenApi = createApi({
     reducerPath: 'gardenApi',
     baseQuery: fetchBaseQuery(),
@@ -25,7 +30,7 @@ export const gardenApi = createApi({
 
                     const { data, error } = await supabase
                         .from('garden')
-                        .select('id, garden_bed, plant_id, growth_stage, planted_at')
+                        .select('id, garden_bed, plant_id, growth_stage, planted_at, last_watered, water_count')
                         .eq('user_id', userId);
 
                     if (error) {
@@ -43,7 +48,9 @@ export const gardenApi = createApi({
                         gardenBed: item.garden_bed,
                         plantId: item.plant_id,
                         growthStage: item.growth_stage,
-                        plantedAt: item.planted_at
+                        plantedAt: item.planted_at,
+                        lastWatered: item.last_watered,
+                        waterCount: item.water_count,
                     }));
 
                     return { data: gardenPlants };
@@ -165,8 +172,72 @@ export const gardenApi = createApi({
                 }
             },
             invalidatesTags: ['Garden'],
-        })
+        }),
+        harvestPlant: build.mutation<null, GardenPlant['id']>({
+            async queryFn(plantId) {
+                try {
+                    const { error } = await supabase
+                        .from('garden')
+                        .delete()
+                        .eq('id', plantId);
+
+                        if (error) {
+                            return {
+                                error: {
+                                    status: error.code ? parseInt(error.code) : 500,
+                                    data: error.message || 'Harvest failed',
+                                }
+                            };
+                        }
+                        return { data: null };
+                } catch (error) {
+                    return {
+                        error: {
+                            status: 500,
+                            data: 'Unknown error occurred'
+                        }
+                    };
+                }
+            },
+            invalidatesTags: ['Garden'],
+        }),
+        waterPlant: build.mutation<GardenPlant, WaterPlantRequest>({
+            async queryFn(args) {
+                try {
+                    const { plantId, waterCount } = args;
+                    const newWaterCount = waterCount + 1;
+
+                    const { data, error } = await supabase
+                        .from('garden')
+                        .update({
+                            last_watered: new Date().toISOString(),
+                            water_count: newWaterCount,
+                        })
+                        .eq('id', plantId)
+                        .select()
+                        .single();
+
+                        if (error) {
+                            return {
+                                error: {
+                                    status: error.code ? parseInt(error.code) : 500,
+                                    data: error.message || 'Water failed',
+                                }
+                            };
+                        }
+                        return { data: data };
+                } catch (error) {
+                    return {
+                        error: {
+                            status: 500,
+                            data: 'Unknown error occurred'
+                        }
+                    };
+                }
+            },
+            invalidatesTags: ['Garden'],
+        }),
     })
 })
 
-export const { useGetGardenQuery, usePlantInBedMutation, useUpdateGrowthStageMutation } = gardenApi
+export const { useGetGardenQuery, usePlantInBedMutation, useUpdateGrowthStageMutation, useHarvestPlantMutation, useWaterPlantMutation } = gardenApi

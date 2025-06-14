@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
-import { selectPlant } from "@/lib/features/garden/gardenUISlice";
+import { setSelectedPlant } from "@/lib/features/inventory/inventoryUISlice";
 import type { PlantBase } from '@/lib/types/plants';
 import { useAddPlantMutation } from "@/lib/services/inventory/inventoryApi";
 import { selectCurrentUserBalance, selectCurrentUserId, useUpdateBalanceMutation } from "@/lib/services/user/userApi";
@@ -39,14 +39,14 @@ const colors = {
 export default function PlantCard(props : PlantCardProps) {
   const userId = useAppSelector(selectCurrentUserId);
   const balance = useAppSelector(selectCurrentUserBalance);
-  const { isPlanting } = useAppSelector((state) => state.gardenUI);
+  const { isPlanting } = useAppSelector((state) => state.inventoryUI);
   const [addPlant] = useAddPlantMutation();
   const [updateBalance] = useUpdateBalanceMutation();
   const dispatch = useAppDispatch();
 
   const handleClick = async () => {
     if (props.type === "inventory" && props.amount > 0) {
-      dispatch(selectPlant({
+      dispatch(setSelectedPlant({
           id: props.id,
           name: props.name,
           rarity: props.rarity,

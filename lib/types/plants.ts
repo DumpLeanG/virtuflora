@@ -12,8 +12,10 @@ export interface GardenPlant {
   userId: string;
   gardenBed: number;
   plantId: number;
-  growthStage: GrowthStage
+  growthStage: GrowthStage;
   plantedAt: Date;
+  lastWatered?: Date;
+  waterCount?: number;
 }
 
 export interface InventoryItem {

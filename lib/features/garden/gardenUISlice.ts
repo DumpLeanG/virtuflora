@@ -1,37 +1,35 @@
 import { createAppSlice } from "@/lib/createAppSlice";
+import { GrowthStage } from "@/lib/types/plants";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { GardenPlant, PlantBase } from "@/lib/types/plants";
 
 interface GardenUIState { 
-  selectedPlant: PlantBase | null;
-  isPlanting: boolean;
+  selectedGardenPlant: {
+    id: number;
+    growthStage: GrowthStage;
+    gardenPlantId: number;
+    waterCount: number;
+    lastWatered: Date | null;
+  } | null
 };
 
 const initialState: GardenUIState = {
-  selectedPlant: null,
-  isPlanting: false
+  selectedGardenPlant: null,
 };
 
 export const gardenUISlice = createAppSlice({
   name: "gardenUI",
   initialState,
   reducers: { 
-    selectPlant: (state, action: PayloadAction<PlantBase>) => {
-      state.selectedPlant = action.payload;
+    setSelectedGardenPlant: (state, action: PayloadAction<GardenUIState['selectedGardenPlant']>) => {
+      state.selectedGardenPlant = action.payload;
     },
-    cancelPlanting: (state) => {
-      state.selectedPlant = null;
+    cancelGardenPlantSelecting: (state) => {
+      state.selectedGardenPlant = null;
     },
-    resetAfterPlanting: (state) => {
-      state.selectedPlant = null;
-    },
-    startPlanting: (state) => {
-      state.isPlanting = true;
-    },
-    endPlanting: (state) => {
-      state.isPlanting = false;
+    resetAfterActivity: (state) => {
+      state.selectedGardenPlant = null;
     },
   }
 });
 
-export const { selectPlant, cancelPlanting, resetAfterPlanting, startPlanting, endPlanting } = gardenUISlice.actions;
+export const { setSelectedGardenPlant, cancelGardenPlantSelecting, resetAfterActivity } = gardenUISlice.actions;

@@ -1,12 +1,13 @@
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
-import { cancelPlanting, endPlanting, resetAfterPlanting, startPlanting } from "@/lib/features/garden/gardenUISlice";
+import { cancelPlanting, endPlanting, resetAfterPlanting, startPlanting } from "@/lib/features/inventory/inventoryUISlice";
+import { setSelectedGardenPlant, cancelGardenPlantSelecting } from "@/lib/features/garden/gardenUISlice";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import type { GardenPlant, GrowthStage } from "@/lib/types/plants";
 import { selectCurrentUserId } from "@/lib/services/user/userApi";
 import { usePlantInBedMutation, useUpdateGrowthStageMutation } from "@/lib/services/garden/gardenApi";
 import { useRemovePlantMutation } from "@/lib/services/inventory/inventoryApi";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface GardenBedPlant extends GardenPlant {
   gardenPlantId: number;
@@ -14,22 +15,26 @@ interface GardenBedPlant extends GardenPlant {
   growthTime: number;
 }
 
-interface GardenBed {
+interface GardenBedProps {
   id: number,
   plant: GardenBedPlant | null,
 }
 
-export default function GardenBed({ id, plant }: GardenBed) {
+export default function GardenBed({ id, plant }: GardenBedProps) {
   const [progress, setProgress] = useState(0);
   const [updateStage, setUpdateStage] = useState<GrowthStage>("seed");
   const dispatch = useAppDispatch();
-  const { selectedPlant, isPlanting } = useAppSelector((state) => state.gardenUI);
+  const { selectedPlant } = useAppSelector((state) => state.inventoryUI);
+  const { selectedGardenPlant } = useAppSelector((state) => state.gardenUI);
   const userId = useAppSelector(selectCurrentUserId);
   const [plantInBed, {isLoading: isPlantInBedLoading} ] = usePlantInBedMutation();
   const [updateGrowthStage] = useUpdateGrowthStageMutation();
   const [removePlant, {isLoading: isRemovePlantLoading}] = useRemovePlantMutation();
   const ref = useOutsideClick<HTMLDivElement>(() => {
     dispatch(cancelPlanting());
+    if(selectedGardenPlant) {
+      dispatch(cancelGardenPlantSelecting());
+    }
   });
   const isLoading = isPlantInBedLoading || isRemovePlantLoading;
 
@@ -42,7 +47,7 @@ export default function GardenBed({ id, plant }: GardenBed) {
 
     const updateProgress = () => {
       const currentTime = Date.now();
-      const timePassed = currentTime - startTime;
+      const timePassed = currentTime - startTime + (plant?.waterCount || 0) * 5000;
       const progressPercent = Math.min(100, (timePassed / totalTime) * 100);
       setProgress(progressPercent);
 
@@ -64,6 +69,15 @@ export default function GardenBed({ id, plant }: GardenBed) {
 
       if (progressPercent >= 100 && interval) {
         clearInterval(interval);
+        if (selectedGardenPlant?.gardenPlantId === plant.gardenPlantId) {
+          dispatch(setSelectedGardenPlant({
+            id: plant.id,
+            growthStage: "plant",
+            gardenPlantId: plant.gardenPlantId,
+            waterCount: plant.waterCount || 0,
+            lastWatered: plant.lastWatered || null,
+          }));
+        }
       }
     }
 
@@ -74,9 +88,9 @@ export default function GardenBed({ id, plant }: GardenBed) {
     }
 
     return () => {
-      if (progress >= 100 && interval) clearInterval(interval);
+      if (interval) clearInterval(interval);
     };
-  }, [plant]);
+  }, [plant, selectedGardenPlant]);
 
   const handleClick = async () => {
     if (!isLoading && !plant && selectedPlant && userId) {
@@ -98,11 +112,23 @@ export default function GardenBed({ id, plant }: GardenBed) {
       } finally {
         dispatch(endPlanting());
       }
+    } else if(plant && !selectedGardenPlant) {
+      try {
+        dispatch(setSelectedGardenPlant({
+          id: plant.id,
+          growthStage: plant.growthStage,
+          gardenPlantId: plant.gardenPlantId,
+          waterCount: plant.waterCount || 0,
+          lastWatered: plant.lastWatered || null,
+        }));
+      } catch (error) {
+        console.error("Selecting garden plant failed:", error);
+      }
     }
   };
 
   return (
-    <div ref={ref} className={`relative size-12 md:size-16 bg-dark-beige rounded-sm p-1 border-2 md:border-3 ${selectedPlant && !plant ? "cursor-pointer border-green" : "border-black"} flex items-center justify-center`} onClick={handleClick}>
+    <div ref={ref} className={`relative size-12 md:size-16 bg-dark-beige rounded-sm p-1 border-2 md:border-3 ${plant && "cursor-pointer"} ${plant && (selectedGardenPlant?.gardenPlantId === plant.gardenPlantId) && "border-green"} ${selectedPlant && !plant ? "cursor-pointer border-green" : "border-black"} flex items-center justify-center`} onClick={handleClick}>
       {isLoading ? 
       <div className="size-9 md:size-12 bg-light-beige rounded-sm flex items-center justify-center">
         <div className="border-4 border-black border-t-green rounded-full size-9 animate-spin">

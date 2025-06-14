@@ -24,7 +24,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
   const [isOpened, setIsOpened] = useState(false);
   const widthBP = useAppSelector(selectWidthBreakpoint);
   const ref = useOutsideClick<HTMLDivElement>(() => setIsOpened(false));
-  const { selectedPlant } = useAppSelector((state) => state.gardenUI);
+  const { selectedPlant } = useAppSelector((state) => state.inventoryUI);
 
   useEffect(() => {
     if(selectedPlant && (widthBP !== 'xl' && widthBP !== '2xl')) {
@@ -39,7 +39,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
   const { data: plants = [], isLoading: isShopLoading } = useGetPlantsQuery();
   const { data: pervInventory = [], isLoading: isInventoryLoading } = useGetInventoryQuery(userId);
 
-  const isLoading = isShopLoading && isInventoryLoading;
+  const isLoading = isShopLoading || isInventoryLoading;
   const inventory = pervInventory.map(item => {
     const plant = plants.find(p => p.id === item.plantId);
     return {
