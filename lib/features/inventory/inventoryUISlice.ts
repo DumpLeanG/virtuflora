@@ -1,9 +1,9 @@
 import { createAppSlice } from "@/lib/createAppSlice";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { PlantBase } from "@/lib/types/plants";
+import type { PlantBase, PlantSelection } from "@/lib/types/plants";
 
 interface InventoryUIState { 
-  selectedPlant: PlantBase | null;
+  selectedPlant: PlantSelection | null;
   isPlanting: boolean;
 };
 
@@ -16,7 +16,7 @@ export const inventoryUISlice = createAppSlice({
   name: "inventoryUI",
   initialState,
   reducers: { 
-    setSelectedPlant: (state, action: PayloadAction<PlantBase>) => {
+    setSelectedPlant: (state, action: PayloadAction<PlantSelection>) => {
       state.selectedPlant = action.payload;
     },
     cancelPlanting: (state) => {

@@ -1,16 +1,16 @@
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
-import { setSelectedPlant } from "@/lib/features/inventory/inventoryUISlice";
+import { setSelectedPlant, resetAfterPlanting } from "@/lib/features/inventory/inventoryUISlice";
 import type { PlantBase } from '@/lib/types/plants';
-import { useAddPlantMutation } from "@/lib/services/inventory/inventoryApi";
+import { useAddPlantMutation, useRemovePlantMutation } from "@/lib/services/inventory/inventoryApi";
 import { selectCurrentUserBalance, selectCurrentUserId, useUpdateBalanceMutation } from "@/lib/services/user/userApi";
 
 interface PlantsListProps {
   type: 'inventory' | 'shop';
+  price: number;
 }
 
 interface ShopPlantCardProps extends PlantBase, PlantsListProps {
-  price: number;
   type: 'shop';
 }
 
@@ -39,28 +39,40 @@ const colors = {
 export default function PlantCard(props : PlantCardProps) {
   const userId = useAppSelector(selectCurrentUserId);
   const balance = useAppSelector(selectCurrentUserBalance);
-  const { isPlanting } = useAppSelector((state) => state.inventoryUI);
-  const [addPlant] = useAddPlantMutation();
-  const [updateBalance] = useUpdateBalanceMutation();
+  const { selectedPlant, isPlanting } = useAppSelector((state) => state.inventoryUI);
+  const [addPlant, {isLoading: isAddPlantLoading}] = useAddPlantMutation();
+  const [updateBalance, {isLoading: isUpdateBalanceLoading}] = useUpdateBalanceMutation();
+  const [removePlant, {isLoading: isRemovePlantLoading}] = useRemovePlantMutation();
   const dispatch = useAppDispatch();
+  const isLoading = isAddPlantLoading || isUpdateBalanceLoading || isRemovePlantLoading;
 
   const handleClick = async () => {
     if (props.type === "inventory" && props.amount > 0) {
-      dispatch(setSelectedPlant({
-          id: props.id,
-          name: props.name,
-          rarity: props.rarity,
-      }));
+      if(selectedPlant) {
+        try {
+          const sellingPrice = -(props.price / 2);
+          await removePlant({userId, plantId: props.id}).unwrap();
+          await updateBalance({price: sellingPrice, balance: balance}).unwrap();
+        } catch (error) {
+          console.error("Sell failed:", error);
+          throw error;
+        } finally {
+          resetAfterPlanting();
+        }
+      } else {
+        dispatch(setSelectedPlant({
+            id: props.id,
+            name: props.name,
+            price: props.price,
+        }));
+      }
     }
     else if (props.type === "shop" && props.price) {
       if(!userId) throw new Error("User not authenticated!");
       
       try {
-        await addPlant({userId: userId, plantId: props.id, amount: 1}).unwrap();
-
+        await addPlant({userId, plantId: props.id, amount: 1}).unwrap();
         await updateBalance({price: props.price, balance: balance}).unwrap();
-
-        return true;
       } catch (error) {
         console.error("Purchase failed:", error);
         throw error;
@@ -69,11 +81,11 @@ export default function PlantCard(props : PlantCardProps) {
   };
 
   const canBuy = props.type === "shop" && props.price && balance >= props.price;
-  const isDisabled = (props.type === "shop" && !canBuy) || (props.type === "inventory" && isPlanting);;
+  const isDisabled = (props.type === "shop" && !canBuy) || (props.type === "inventory" && isPlanting) || isLoading;
 
   return (
     <div className={`group flex flex-col ${isDisabled ? 'opacity-50' : 'cursor-pointer'}`} onClick={!isDisabled ? handleClick : undefined}>
-      <div className={`bg-background rounded-sm p-2 md:p-3 border-2 md:border-3 ${colors[props.rarity].color} flex items-center justify-center drop-shadow-2 md:drop-shadow-3 ${!isDisabled && 'group-hover:scale-105 transition-transform'}`}>
+      <div className={`bg-background rounded-sm p-2 md:p-3 border-2 md:border-3 ${colors[props.rarity].color} flex items-center justify-center ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} ${!isDisabled && 'group-hover:scale-105 transition-transform'}`}>
         <Image
           className="size-6 md:size-8 object-contain"
           src={`/${props.name}.svg`}
@@ -84,9 +96,15 @@ export default function PlantCard(props : PlantCardProps) {
         />
       </div>
       {props.type === "inventory" ? 
-        <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-sm rounded-sm bg-background border-2 md:border-3 border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black text-center`}>
-          x{props.amount}
-        </span>
+        (selectedPlant?.id === props.id ?
+          <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-sm rounded-sm bg-red border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
+            Sell
+          </span>
+        : 
+          <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-sm rounded-sm bg-background border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
+            x{props.amount}
+          </span>
+        )
         :
         <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-sm rounded-sm bg-background border-2 md:border-3 border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black text-center`}>
           {props.price}$

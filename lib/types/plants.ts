@@ -1,6 +1,12 @@
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary';
 export type GrowthStage = 'seed' | 'sprout' | 'plant';
 
+export interface PlantSelection {
+  id: number;
+  name: string;
+  price: number;
+}
+
 export interface PlantBase {
   id: number;
   name: string;

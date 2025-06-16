@@ -46,6 +46,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
       ...item,
       name: plant?.name || "Unknown",
       rarity: plant?.rarity || "common",
+      price: plant?.price || 0,
     };
   });
 
@@ -102,6 +103,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
                         name={plant.name} 
                         rarity={plant.rarity} 
                         amount={plant.amount}
+                        price={plant.price}
                       />
                     ))
                   : shopItems.map((plant) => (
@@ -141,6 +143,7 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
                         name={plant.name} 
                         rarity={plant.rarity} 
                         amount={plant.amount}
+                        price={plant.price}
                       />
                     ))
                   : shopItems.map((plant) => (
