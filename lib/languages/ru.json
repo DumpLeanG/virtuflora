@@ -1,0 +1,22 @@
+{
+    "money": "Деньги",
+    "copyright": "2025 Virtuflora. Создано Михаилом Чиненовым",
+    "login": "Авторизация",
+    "registration": "Регистрация",
+    "settings": "Настройки",
+    "achievements": "Достижения",
+    "lightTheme": "Светлая",
+    "darkTheme": "Тёмная",
+    "exitBtn": "Выйти",
+    "sellBtn": "Сбыть",
+    "loginBtn": "Войти",
+    "loginBtnActivated": "Вход...",
+    "registerBtn": "Зарегистрироваться",
+    "registerBtnActivated": "Регистрация...",
+    "collectBtn": "Забрать",
+    "collectBtnActivated": "Забрано",
+    "email": "Адрес эл. почты",
+    "password": "Пароль",
+    "confirmPassword": "Подтверждение пароля",
+    "nickname": "Прозвище"
+}

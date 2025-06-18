@@ -1,3 +1,4 @@
+import { useLanguages } from "@/lib/hooks/useLanguages";
 import Image from "next/image";
 import React from "react";
 
@@ -44,7 +45,7 @@ const colors = {
 }
 
 export default function Button(props: StandardButtonType | ArrowButtonType | TextButtonType) {
-    
+    const lang = useLanguages();
 
     return (
         props.type === 'arrow' ?
@@ -64,7 +65,7 @@ export default function Button(props: StandardButtonType | ArrowButtonType | Tex
             bg-green hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-2/50 md:disabled:hover:drop-shadow-3/50 
             disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
         >
-            {props.type === 'login' ? (props.disabled ? "Loginning" : "Login") : props.type === "register" ? (props.disabled ? "Registering" : "Register") : props.completed ? "Claimed" : "Claim"}
+            {props.type === 'login' ? (props.disabled ? lang("loginBtnActivated") : lang("loginBtn")) : props.type === "register" ? (props.disabled ? lang("registerBtnActivated") : lang("registerBtn")) : props.completed ? lang("collectBtnActivated") : lang("collectBtn")}
         </button>
         : props.type === 'exit' ?
         <button onClick={props.onClick} 
@@ -72,7 +73,7 @@ export default function Button(props: StandardButtonType | ArrowButtonType | Tex
             bg-red hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-2/50 md:disabled:hover:drop-shadow-3/50 
             disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
         >
-            Exit
+            {lang("exitBtn")}
         </button>
         : <button onClick={props.onClick} 
             className={`${props.className} group relative z-1 p-2 border-2 md:border-3 rounded-sm border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black

@@ -31,7 +31,6 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
   const [updateGrowthStage] = useUpdateGrowthStageMutation();
   const [removePlant, {isLoading: isRemovePlantLoading}] = useRemovePlantMutation();
   const ref = useOutsideClick<HTMLDivElement>(() => {
-    dispatch(cancelPlanting());
     if(selectedGardenPlant) {
       dispatch(cancelGardenPlantSelecting());
     }
@@ -112,7 +111,7 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
       } finally {
         dispatch(endPlanting());
       }
-    } else if(plant && !selectedGardenPlant) {
+    } else if(plant && !selectedPlant) {
       try {
         dispatch(setSelectedGardenPlant({
           id: plant.id,

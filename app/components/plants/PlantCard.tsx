@@ -4,6 +4,7 @@ import { setSelectedPlant, resetAfterPlanting } from "@/lib/features/inventory/i
 import type { PlantBase } from '@/lib/types/plants';
 import { useAddPlantMutation, useRemovePlantMutation } from "@/lib/services/inventory/inventoryApi";
 import { selectCurrentUserBalance, selectCurrentUserId, useUpdateBalanceMutation } from "@/lib/services/user/userApi";
+import { useLanguages } from "@/lib/hooks/useLanguages";
 
 interface PlantsListProps {
   type: 'inventory' | 'shop';
@@ -46,9 +47,11 @@ export default function PlantCard(props : PlantCardProps) {
   const dispatch = useAppDispatch();
   const isLoading = isAddPlantLoading || isUpdateBalanceLoading || isRemovePlantLoading;
 
+  const lang = useLanguages();
+
   const handleClick = async () => {
     if (props.type === "inventory" && props.amount > 0) {
-      if(selectedPlant) {
+      if(selectedPlant && selectedPlant.id === props.id) {
         try {
           const sellingPrice = -(props.price / 2);
           await removePlant({userId, plantId: props.id}).unwrap();
@@ -57,8 +60,8 @@ export default function PlantCard(props : PlantCardProps) {
           console.error("Sell failed:", error);
           throw error;
         } finally {
-          resetAfterPlanting();
-        }
+          dispatch(resetAfterPlanting());
+        } 
       } else {
         dispatch(setSelectedPlant({
             id: props.id,
@@ -97,16 +100,16 @@ export default function PlantCard(props : PlantCardProps) {
       </div>
       {props.type === "inventory" ? 
         (selectedPlant?.id === props.id ?
-          <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-sm rounded-sm bg-red border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
-            Sell
+          <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-xs md:text-sm rounded-sm bg-red border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
+            {lang("sellBtn")}
           </span>
         : 
-          <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-sm rounded-sm bg-background border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
+          <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-xs md:text-sm rounded-sm bg-background border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
             x{props.amount}
           </span>
         )
         :
-        <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-sm rounded-sm bg-background border-2 md:border-3 border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black text-center`}>
+        <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-xs md:text-sm rounded-sm bg-background border-2 md:border-3 border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black text-center`}>
           {props.price}$
         </span>
       }

@@ -7,8 +7,9 @@ import { userApi } from "./services/user/userApi";
 import { inventoryApi } from "./services/inventory/inventoryApi";
 import { gardenApi } from "./services/garden/gardenApi";
 import { gardenUISlice } from "./features/garden/gardenUISlice";
+import { languageSlice } from "./features/language/languageSlice";
 
-const rootReducer = combineSlices(screenSlice, inventoryUISlice, gardenUISlice, plantsApi, userApi, inventoryApi, gardenApi);
+const rootReducer = combineSlices(screenSlice, inventoryUISlice, gardenUISlice, languageSlice, plantsApi, userApi, inventoryApi, gardenApi);
 export type RootState = ReturnType<typeof rootReducer>;
 
 export const makeStore = () => {

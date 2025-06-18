@@ -3,13 +3,14 @@
 import PlantCard from "./PlantCard";
 import Line from "./Line";
 import Button from "../layout/button/Button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { selectWidthBreakpoint } from "@/lib/features/screen/screenSlice";
-import { useAppSelector } from "@/lib/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/hooks";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { useGetPlantsQuery } from "@/lib/services/plants/plantsApi";
 import { selectCurrentUserId } from "@/lib/services/user/userApi";
 import { useGetInventoryQuery } from "@/lib/services/inventory/inventoryApi";
+import { closeInventory, openInventory } from "@/lib/features/inventory/inventoryUISlice";
 
 const getRarityOrder = (rarity: string) => {
   switch (rarity) {
@@ -21,16 +22,17 @@ const getRarityOrder = (rarity: string) => {
 };
 
 export default function PlantsList(props: {side: 'right' | 'left', type: 'inventory' | 'shop'}) {
-  const [isOpened, setIsOpened] = useState(false);
+  const dispatch = useAppDispatch();
+  const [isShopOpened, setIsShopOpened] = useState(false);
+  const { isInventoryOpened } = useAppSelector((state) => state.inventoryUI);
   const widthBP = useAppSelector(selectWidthBreakpoint);
-  const ref = useOutsideClick<HTMLDivElement>(() => setIsOpened(false));
-  const { selectedPlant } = useAppSelector((state) => state.inventoryUI);
-
-  useEffect(() => {
-    if(selectedPlant && (widthBP !== 'xl' && widthBP !== '2xl')) {
-      setIsOpened(false);
+  const ref = useOutsideClick<HTMLDivElement>(() => {
+    if(props.type === "inventory") {
+      dispatch(closeInventory());
+    } else {
+      setIsShopOpened(!isShopOpened);
     }
-  }, [selectedPlant])
+  });
   
   const [currentPage, setCurrentPage] = useState(1);
   let itemsPerPage = widthBP === 'xs' || widthBP === 'sm' ? 24 : widthBP === 'md' || widthBP === 'lg' ? 36 : widthBP === 'xl' ? 15 : 20;
@@ -80,9 +82,25 @@ export default function PlantsList(props: {side: 'right' | 'left', type: 'invent
     ? sortedInventory.slice(pageFirstIndex, pageFirstIndex + itemsPerPage)
     : [];
 
+  const isOpened = props.type === 'inventory' 
+    ? isInventoryOpened 
+    : isShopOpened;
+  
+  const handleClick = () => {
+    if (props.type === 'inventory') {
+      if(isInventoryOpened) {
+        dispatch(closeInventory());
+      } else {
+        dispatch(openInventory());
+      }
+    } else {
+      setIsShopOpened(!isShopOpened);
+    }
+  }
+
   return (
     <div className={`flex flex-col gap-8 ${props.side === 'right' ? 'items-start' : 'items-end'} relative xl:w-72 2xl:w-93.5`}>
-      <Button type={props.type} onClick={() => setIsOpened(!isOpened)}/>
+      <Button type={props.type} onClick={handleClick}/>
       {isOpened && <>
         {widthBP === 'xl' ||  widthBP === '2xl' ? 
         <>

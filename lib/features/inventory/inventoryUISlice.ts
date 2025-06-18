@@ -5,11 +5,15 @@ import type { PlantBase, PlantSelection } from "@/lib/types/plants";
 interface InventoryUIState { 
   selectedPlant: PlantSelection | null;
   isPlanting: boolean;
+  isInventoryOpened: boolean;
+  isShopOpened: boolean;
 };
 
 const initialState: InventoryUIState = {
   selectedPlant: null,
-  isPlanting: false
+  isPlanting: false,
+  isInventoryOpened: false,
+  isShopOpened: false,
 };
 
 export const inventoryUISlice = createAppSlice({
@@ -31,7 +35,13 @@ export const inventoryUISlice = createAppSlice({
     endPlanting: (state) => {
       state.isPlanting = false;
     },
+    openInventory: (state) => {
+      state.isInventoryOpened = true;
+    },
+    closeInventory: (state) => {
+      state.isInventoryOpened = false;
+    },
   }
 });
 
-export const { setSelectedPlant, cancelPlanting, resetAfterPlanting, startPlanting, endPlanting } = inventoryUISlice.actions;
+export const { setSelectedPlant, cancelPlanting, resetAfterPlanting, startPlanting, endPlanting, openInventory, closeInventory } = inventoryUISlice.actions;

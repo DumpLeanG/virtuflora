@@ -1,0 +1,22 @@
+{
+    "money": "Money",
+    "copyright": "2025 Virtuflora. Created by Michail Chinenov",
+    "login": "Login",
+    "registration": "Registration",
+    "settings": "Settings",
+    "achievements": "Achievements",
+    "lightTheme": "Light",
+    "darkTheme": "Dark",
+    "exitBtn": "Exit",
+    "sellBtn": "Sell",
+    "loginBtn": "Login",
+    "loginBtnActivated": "Loginning...",
+    "registerBtn": "Register",
+    "registerBtnActivated": "Registering...",
+    "collectBtn": "Collect",
+    "collectBtnActivated": "Collected",
+    "email": "Email address",
+    "password": "Passowrd",
+    "confirmPassword": "Passowrd confirmation",
+    "nickname": "Nickname"
+}
