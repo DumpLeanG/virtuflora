@@ -5,6 +5,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 interface GardenUIState { 
   selectedGardenPlant: {
     id: number;
+    name: string;
     growthStage: GrowthStage;
     gardenPlantId: number;
     waterCount: number;

@@ -21,7 +21,7 @@ export interface LoginRequest {
 }
 
 export interface UpdateBalanceRequest {
-    price: number;
+    amount: number;
     balance: number;
 }
 
@@ -194,7 +194,7 @@ export const userApi = createApi({
             queryFn: async (payload) => {
                 try {
                     const currentBalance = payload.balance;
-                    const newBalance = currentBalance - payload.price;
+                    const newBalance = currentBalance - payload.amount;
 
                     const { data: { user }, error} = await supabase.auth.updateUser({
                         data: {

@@ -13,6 +13,7 @@ import { useAddPlantMutation } from "@/lib/services/inventory/inventoryApi";
 import { useLanguages } from "@/lib/hooks/useLanguages";
 import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { cancelPlanting } from "@/lib/features/inventory/inventoryUISlice";
+import { useUpdateProgressMutation } from "@/lib/services/achievements/achievementsApi";
 
 export default function Garden() {
   const lang = useLanguages();
@@ -53,7 +54,8 @@ export default function Garden() {
   const [harvestPlant, {isLoading: isHarvestPlantLoading}] = useHarvestPlantMutation();
   const [addPlant, {isLoading: isAddPlantLoading}] = useAddPlantMutation();
   const [waterPlant, { isLoading: isWaterLoading }] = useWaterPlantMutation();
-  const isLoading = isHarvestPlantLoading || isAddPlantLoading || isWaterLoading;
+  const [updateProgress, {isLoading: isUpdateProgressLoading}] = useUpdateProgressMutation();
+  const isLoading = isHarvestPlantLoading || isAddPlantLoading || isWaterLoading || isUpdateProgressLoading;
 
   const { selectedPlant, isInventoryOpened } = useAppSelector((state) => state.inventoryUI);
 
@@ -71,6 +73,16 @@ export default function Garden() {
 
       if(selectedGardenPlant.growthStage === "plant") {
         await addPlant({userId, plantId: selectedGardenPlant.id, amount: 3});
+
+        await updateProgress({ 
+          userId, 
+          action: "harvest any",
+        }).unwrap();
+
+        await updateProgress({ 
+          userId,
+          action: `harvest ${selectedGardenPlant.name}`,
+        }).unwrap();
       }
     } catch (error) {
       console.error("Harvesting failed:", error);
@@ -83,7 +95,17 @@ export default function Garden() {
     try {
       if(!selectedGardenPlant) return;
 
-      await waterPlant({plantId: selectedGardenPlant.gardenPlantId, waterCount: selectedGardenPlant.waterCount})
+      await waterPlant({plantId: selectedGardenPlant.gardenPlantId, waterCount: selectedGardenPlant.waterCount});
+
+      await updateProgress({ 
+        userId, 
+        action: "water any",
+      }).unwrap();
+
+      await updateProgress({ 
+        userId,
+        action: `water ${selectedGardenPlant.name}`,
+      }).unwrap();
     } catch (error) {
       console.error("Watering failed:", error);
     } finally {

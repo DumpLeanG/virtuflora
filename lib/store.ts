@@ -8,8 +8,9 @@ import { inventoryApi } from "./services/inventory/inventoryApi";
 import { gardenApi } from "./services/garden/gardenApi";
 import { gardenUISlice } from "./features/garden/gardenUISlice";
 import { languageSlice } from "./features/language/languageSlice";
+import { achievementsApi } from "./services/achievements/achievementsApi";
 
-const rootReducer = combineSlices(screenSlice, inventoryUISlice, gardenUISlice, languageSlice, plantsApi, userApi, inventoryApi, gardenApi);
+const rootReducer = combineSlices(screenSlice, inventoryUISlice, gardenUISlice, languageSlice, plantsApi, userApi, inventoryApi, gardenApi, achievementsApi);
 export type RootState = ReturnType<typeof rootReducer>;
 
 export const makeStore = () => {
@@ -21,6 +22,7 @@ export const makeStore = () => {
         .concat(userApi.middleware)
         .concat(inventoryApi.middleware)
         .concat(gardenApi.middleware)
+        .concat(achievementsApi.middleware)
   });
 };
 

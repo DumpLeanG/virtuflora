@@ -62,8 +62,8 @@ export default function Button(props: StandardButtonType | ArrowButtonType | Tex
         : props.type === 'claim' || props.type === 'login' || props.type === 'register' ?
         <button onClick={props.onClick} 
             className={`${props.className} group relative z-1 py-2 px-6 md:px-12 border-2 md:border-3 rounded-sm border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black
-            bg-green hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-2/50 md:disabled:hover:drop-shadow-3/50 
-            disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
+            bg-green hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-none md:disabled:hover:drop-shadow-none 
+            disabled:duration-initial disabled:text-black/50 disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
         >
             {props.type === 'login' ? (props.disabled ? lang("loginBtnActivated") : lang("loginBtn")) : props.type === "register" ? (props.disabled ? lang("registerBtnActivated") : lang("registerBtn")) : props.completed ? lang("collectBtnActivated") : lang("collectBtn")}
         </button>
@@ -71,7 +71,7 @@ export default function Button(props: StandardButtonType | ArrowButtonType | Tex
         <button onClick={props.onClick} 
             className={`${props.className} group relative z-1 py-2 px-6 md:px-12 border-2 md:border-3 rounded-sm border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black
             bg-red hover:drop-shadow-none cursor-pointer duration-200 disabled:cursor-default disabled:hover:drop-shadow-2/50 md:disabled:hover:drop-shadow-3/50 
-            disabled:duration-initial disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
+            disabled:duration-initial disabled:text-black/50 disabled:border-black/50 disabled:drop-shadow-none`} disabled={props.disabled || props.completed}
         >
             {lang("exitBtn")}
         </button>

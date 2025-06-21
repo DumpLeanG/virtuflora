@@ -8,6 +8,7 @@ import { selectCurrentUserId } from "@/lib/services/user/userApi";
 import { usePlantInBedMutation, useUpdateGrowthStageMutation } from "@/lib/services/garden/gardenApi";
 import { useRemovePlantMutation } from "@/lib/services/inventory/inventoryApi";
 import { useEffect, useState } from "react";
+import { useUpdateProgressMutation } from "@/lib/services/achievements/achievementsApi";
 
 interface GardenBedPlant extends GardenPlant {
   gardenPlantId: number;
@@ -29,13 +30,14 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
   const userId = useAppSelector(selectCurrentUserId);
   const [plantInBed, {isLoading: isPlantInBedLoading} ] = usePlantInBedMutation();
   const [updateGrowthStage] = useUpdateGrowthStageMutation();
+  const [updateProgress, {isLoading: isUpdateProgressLoading}] = useUpdateProgressMutation();
   const [removePlant, {isLoading: isRemovePlantLoading}] = useRemovePlantMutation();
   const ref = useOutsideClick<HTMLDivElement>(() => {
     if(selectedGardenPlant) {
       dispatch(cancelGardenPlantSelecting());
     }
   });
-  const isLoading = isPlantInBedLoading || isRemovePlantLoading;
+  const isLoading = isPlantInBedLoading || isRemovePlantLoading || isUpdateProgressLoading;
 
   useEffect(() => {
     if(!plant) return;
@@ -71,6 +73,7 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
         if (selectedGardenPlant?.gardenPlantId === plant.gardenPlantId) {
           dispatch(setSelectedGardenPlant({
             id: plant.id,
+            name: plant.name,
             growthStage: "plant",
             gardenPlantId: plant.gardenPlantId,
             waterCount: plant.waterCount || 0,
@@ -106,6 +109,16 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
           userId, 
           plantId: selectedPlant.id,
         }).unwrap();
+
+        await updateProgress({ 
+          userId, 
+          action: "plant any",
+        }).unwrap();
+
+        await updateProgress({ 
+          userId,
+          action: `plant ${selectedPlant.name}`,
+        }).unwrap();
       } catch (error) {
         console.error("Planting failed:", error);
       } finally {
@@ -115,6 +128,7 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
       try {
         dispatch(setSelectedGardenPlant({
           id: plant.id,
+          name: plant.name,
           growthStage: plant.growthStage,
           gardenPlantId: plant.gardenPlantId,
           waterCount: plant.waterCount || 0,

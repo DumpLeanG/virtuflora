@@ -7,12 +7,16 @@ import { useOutsideClick } from "@/lib/hooks/useOutsideClick";
 import { useAppSelector } from "@/lib/hooks/hooks";
 import { selectHeightBreakpoint, selectWidthBreakpoint } from "@/lib/features/screen/screenSlice";
 import { useLanguages } from "@/lib/hooks/useLanguages";
+import { useGetAchievementsQuery } from "@/lib/services/achievements/achievementsApi";
+import { selectCurrentUserId } from "@/lib/services/user/userApi";
 
 interface AchievementsProps {
   handleOutsideClick: () => void;
 }
 
 export default function Achievements({ handleOutsideClick } : AchievementsProps) {
+  const userId = useAppSelector(selectCurrentUserId);
+  const { data: achievements = [] } = useGetAchievementsQuery(userId);
   const [currentPage, setCurrentPage] = useState(1);
   const ref = useOutsideClick<HTMLDivElement>(() => {
       handleOutsideClick();
@@ -22,9 +26,8 @@ export default function Achievements({ handleOutsideClick } : AchievementsProps)
   const widthBP = useAppSelector(selectWidthBreakpoint);
   let itemsPerPage = heightBP === 'h-sm' || widthBP === 'xs' || widthBP === 'sm' ? 2 : 3;
 
-  const fullArray = Array.from({length: 7});
   const pageFirstIndex = (currentPage - 1) * itemsPerPage;
-  const visibleAchievements = fullArray.slice(pageFirstIndex, pageFirstIndex + itemsPerPage);
+  const visibleAchievements = achievements.slice(pageFirstIndex, pageFirstIndex + itemsPerPage);
 
   const lang = useLanguages();
 
@@ -37,12 +40,12 @@ export default function Achievements({ handleOutsideClick } : AchievementsProps)
           <span className="w-full h-[2px] md:h-[3px] bg-black rounded-sm"></span>
         </div>
         <ul className="w-full flex flex-col gap-6 md:gap-8">
-          {visibleAchievements.map((achievement, index) => (
-            <Achievement key={index}/>
+          {visibleAchievements.map((achievement) => (
+            <Achievement achievement={achievement} key={achievement.id}/>
           ))}
         </ul>
         <Button type="arrow" arrowType="prev" isAbsolute className="top-1/2 absolute -translate-y-1/2 bg-dark-beige" onClick={() => setCurrentPage(page => page - 1)} disabled={currentPage === 1}/>
-        <Button type="arrow" arrowType="next" isAbsolute className="top-1/2 absolute -translate-y-1/2 bg-dark-beige" onClick={() => setCurrentPage(page => page + 1)} disabled={currentPage === Math.ceil(fullArray.length / itemsPerPage)}/>
+        <Button type="arrow" arrowType="next" isAbsolute className="top-1/2 absolute -translate-y-1/2 bg-dark-beige" onClick={() => setCurrentPage(page => page + 1)} disabled={currentPage === Math.ceil(achievements.length / itemsPerPage)}/>
       </div>
       
     </div>

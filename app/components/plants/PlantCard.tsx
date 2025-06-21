@@ -5,6 +5,7 @@ import type { PlantBase } from '@/lib/types/plants';
 import { useAddPlantMutation, useRemovePlantMutation } from "@/lib/services/inventory/inventoryApi";
 import { selectCurrentUserBalance, selectCurrentUserId, useUpdateBalanceMutation } from "@/lib/services/user/userApi";
 import { useLanguages } from "@/lib/hooks/useLanguages";
+import { useUpdateProgressMutation } from "@/lib/services/achievements/achievementsApi";
 
 interface PlantsListProps {
   type: 'inventory' | 'shop';
@@ -44,8 +45,9 @@ export default function PlantCard(props : PlantCardProps) {
   const [addPlant, {isLoading: isAddPlantLoading}] = useAddPlantMutation();
   const [updateBalance, {isLoading: isUpdateBalanceLoading}] = useUpdateBalanceMutation();
   const [removePlant, {isLoading: isRemovePlantLoading}] = useRemovePlantMutation();
+  const [updateProgress, {isLoading: isUpdateProgressLoading}] = useUpdateProgressMutation();
   const dispatch = useAppDispatch();
-  const isLoading = isAddPlantLoading || isUpdateBalanceLoading || isRemovePlantLoading;
+  const isLoading = isAddPlantLoading || isUpdateBalanceLoading || isRemovePlantLoading || isUpdateProgressLoading;
 
   const lang = useLanguages();
 
@@ -55,7 +57,18 @@ export default function PlantCard(props : PlantCardProps) {
         try {
           const sellingPrice = -(props.price / 2);
           await removePlant({userId, plantId: props.id}).unwrap();
-          await updateBalance({price: sellingPrice, balance: balance}).unwrap();
+
+          await updateBalance({amount: sellingPrice, balance: balance}).unwrap();
+
+          await updateProgress({ 
+            userId, 
+            action: "sell any",
+          }).unwrap();
+
+          await updateProgress({ 
+            userId,
+            action: `sell ${props.name}`,
+          }).unwrap();
         } catch (error) {
           console.error("Sell failed:", error);
           throw error;
@@ -75,7 +88,18 @@ export default function PlantCard(props : PlantCardProps) {
       
       try {
         await addPlant({userId, plantId: props.id, amount: 1}).unwrap();
-        await updateBalance({price: props.price, balance: balance}).unwrap();
+
+        await updateBalance({amount: props.price, balance: balance}).unwrap();
+
+        await updateProgress({ 
+          userId, 
+          action: "buy any",
+        }).unwrap();
+
+        await updateProgress({ 
+          userId,
+          action: `buy ${props.name}`,
+        }).unwrap();
       } catch (error) {
         console.error("Purchase failed:", error);
         throw error;
