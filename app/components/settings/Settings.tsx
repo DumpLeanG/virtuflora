@@ -39,7 +39,6 @@ export default function Settings({ handleOutsideClick } : SettingsProps) {
         </div>
         <div className="flex flex-col gap-6 md:gap-8 w-full">
             <SettingsItem type="language"/>
-            <SettingsItem type="theme"/>
         </div>
         <Button type="exit" onClick={handleLogout}/>
       </div>

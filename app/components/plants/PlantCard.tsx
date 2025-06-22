@@ -111,8 +111,8 @@ export default function PlantCard(props : PlantCardProps) {
   const isDisabled = (props.type === "shop" && !canBuy) || (props.type === "inventory" && isPlanting) || isLoading;
 
   return (
-    <div className={`group flex flex-col ${isDisabled ? 'opacity-50' : 'cursor-pointer'}`} onClick={!isDisabled ? handleClick : undefined}>
-      <div className={`bg-background rounded-sm p-2 md:p-3 border-2 md:border-3 ${colors[props.rarity].color} flex items-center justify-center ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} ${!isDisabled && 'group-hover:scale-105 transition-transform'}`}>
+    <div className={`${!isDisabled && 'hover:scale-105 transition-transform'} flex flex-col ${isDisabled ? 'opacity-50' : 'cursor-pointer'}`} onClick={!isDisabled ? handleClick : undefined}>
+      <div className={`bg-background rounded-sm p-2 md:p-3 border-2 md:border-3 ${colors[props.rarity].color} flex items-center justify-center ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} `}>
         <Image
           className="size-6 md:size-8 object-contain"
           src={`/${props.name}.svg`}
@@ -124,16 +124,16 @@ export default function PlantCard(props : PlantCardProps) {
       </div>
       {props.type === "inventory" ? 
         (selectedPlant?.id === props.id ?
-          <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-xs md:text-sm rounded-sm bg-red border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
+          <span className={`text-xs md:text-sm rounded-sm bg-red border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
             {lang("sellBtn")}
           </span>
         : 
-          <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-xs md:text-sm rounded-sm bg-background border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
+          <span className={`text-xs md:text-sm rounded-sm bg-background border-2 md:border-3 border-black ${selectedPlant?.id === props.id ? "drop-shadow-none" : "drop-shadow-2 md:drop-shadow-3"} drop-shadow-black text-center`}>
             x{props.amount}
           </span>
         )
         :
-        <span className={`${!isDisabled && 'group-hover:scale-105 transition-transform'} text-xs md:text-sm rounded-sm bg-background border-2 md:border-3 border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black text-center`}>
+        <span className={`text-xs md:text-sm rounded-sm bg-background border-2 md:border-3 border-black drop-shadow-2 md:drop-shadow-3 drop-shadow-black text-center`}>
           {props.price}$
         </span>
       }

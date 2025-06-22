@@ -10,11 +10,13 @@ interface AchievementProps {
 
 export default function Achievement( props : AchievementProps ) {
   const userId = useAppSelector(selectCurrentUserId);
-  const balance = useAppSelector(selectCurrentUserBalance)
+  const balance = useAppSelector(selectCurrentUserBalance);
   const [collectReward, {isLoading: isCollectRewardLoading}] = useCollectRewardMutation();
   const [updateBalance, {isLoading: isUpdateBalanceLoading}] = useUpdateBalanceMutation();
   const progress = props.achievement.progress / props.achievement.target * 100;
   const isLoading = isCollectRewardLoading || isUpdateBalanceLoading;
+  const language = useAppSelector((state) => state.language.current);
+  const key = `${language}Name` as keyof Achievement;
 
   const handleCollect = async () => {
     try {
@@ -36,7 +38,7 @@ export default function Achievement( props : AchievementProps ) {
             height={32}/>
         </div>
         <div className="flex flex-col justify-between flex-1">
-          <h3>{props.achievement.name}</h3>
+          <h3>{language === "en" ? props.achievement.name : props.achievement[key]}</h3>
           <div className="flex gap-4 md:gap-6 items-center relative">
             <div className="bg-background border-2 md:border-3 border-black rounded-sm w-full">
               <span className="h-4 md:h-6 bg-green block" style={{ width: `${progress}%` }}></span>

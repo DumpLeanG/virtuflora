@@ -141,7 +141,7 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
   };
 
   return (
-    <div ref={ref} className={`relative size-12 md:size-16 bg-dark-beige rounded-sm p-1 border-2 md:border-3 ${plant && "cursor-pointer"} ${plant && (selectedGardenPlant?.gardenPlantId === plant.gardenPlantId) && "border-green"} ${selectedPlant && !plant ? "cursor-pointer border-green" : "border-black"} flex items-center justify-center`} onClick={handleClick}>
+    <div ref={ref} className={`relative size-12 md:size-16 bg-dark-beige rounded-sm p-1 border-2 md:border-3 ${plant && "hover:scale-105 transition-transform cursor-pointer"} ${plant && (selectedGardenPlant?.gardenPlantId === plant.gardenPlantId) && "border-green"} ${selectedPlant && !plant ? "cursor-pointer border-green" : "border-black"} flex items-center justify-center`} onClick={handleClick}>
       {isLoading ? 
       <div className="size-9 md:size-12 bg-light-beige rounded-sm flex items-center justify-center">
         <div className="border-4 border-black border-t-green rounded-full size-9 animate-spin">
