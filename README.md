@@ -56,7 +56,7 @@ pnpm install</code></pre>
   <p>Создайте файл <code>.env</code> в корне проекта:</p>
   <pre># Supabase  
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url  
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key 
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key</pre>
   <h3>3. Запуск dev-сервера</h3>
   <pre><code>npm run dev
 # или
