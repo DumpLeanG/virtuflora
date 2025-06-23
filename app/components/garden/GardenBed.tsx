@@ -7,7 +7,7 @@ import type { GardenPlant, GrowthStage } from "@/lib/types/plants";
 import { selectCurrentUserId } from "@/lib/services/user/userApi";
 import { usePlantInBedMutation, useUpdateGrowthStageMutation } from "@/lib/services/garden/gardenApi";
 import { useRemovePlantMutation } from "@/lib/services/inventory/inventoryApi";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUpdateProgressMutation } from "@/lib/services/achievements/achievementsApi";
 
 interface GardenBedPlant extends GardenPlant {
@@ -23,7 +23,6 @@ interface GardenBedProps {
 
 export default function GardenBed({ id, plant }: GardenBedProps) {
   const [progress, setProgress] = useState(0);
-  const [updateStage, setUpdateStage] = useState<GrowthStage>("seed");
   const dispatch = useAppDispatch();
   const { selectedPlant } = useAppSelector((state) => state.inventoryUI);
   const { selectedGardenPlant } = useAppSelector((state) => state.gardenUI);
@@ -39,6 +38,11 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
   });
   const isLoading = isPlantInBedLoading || isRemovePlantLoading || isUpdateProgressLoading;
 
+  const progressRef = useRef(0);
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
   useEffect(() => {
     if(!plant) return;
 
@@ -50,18 +54,18 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
       const currentTime = Date.now();
       const timePassed = currentTime - startTime + (plant?.waterCount || 0) * 5000;
       const progressPercent = Math.min(100, (timePassed / totalTime) * 100);
-      setProgress(progressPercent);
 
-      if (progressPercent >= 50 && plant.growthStage === "seed" && updateStage !== "sprout" && updateStage !== "plant") {
-        setUpdateStage("sprout");
+      setProgress(progressPercent);
+      progressRef.current = progressPercent;
+
+      if (progressPercent >= 50 && plant.growthStage === "seed") {
         updateGrowthStage({ 
           id: plant.gardenPlantId, 
           growthStage: "sprout" 
         });
       }
 
-      if (progressPercent >= 100 && plant.growthStage === "sprout" && updateStage !== "plant") {
-        setUpdateStage("plant");
+      if (progressPercent >= 100 && plant.growthStage === "sprout") {
         updateGrowthStage({ 
           id: plant.gardenPlantId, 
           growthStage: "plant" 
@@ -74,7 +78,7 @@ export default function GardenBed({ id, plant }: GardenBedProps) {
           dispatch(setSelectedGardenPlant({
             id: plant.id,
             name: plant.name,
-            growthStage: "plant",
+            growthStage: plant.growthStage,
             gardenPlantId: plant.gardenPlantId,
             waterCount: plant.waterCount || 0,
             lastWatered: plant.lastWatered || null,
